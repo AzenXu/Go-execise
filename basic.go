@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math"
 )
 
@@ -31,12 +32,72 @@ func main() {
 	triangle()
 	consts()
 	enums()
+
+	//	条件语句
+	bounded(438)
+	fileRead()
+}
+
+/*
+ * 条件语句
+ */
+
+func grade(score int) string {
+	var g string
+	switch {
+	case score < 0 || score > 100:
+		panic(fmt.Sprintf("Wrong score: %d", score))
+	case score < 60:
+		g = "F"
+	case score < 80:
+		g = "B"
+	case score < 90:
+		g = "A"
+	case score <= 100:
+		g = "SSR"
+	}
+	return g
+}
+
+func eval(a, b int, op string) int {
+	var result int
+	switch op {
+	case "+":
+		result = a + b
+	case "-":
+		result = a - b
+	case "*":
+		result = a * b
+	case "/":
+		result = a / b
+	default:
+		panic("不支持的操作类型")
+	}
+	return result
+}
+
+func fileRead() {
+	const filename = "abc.txt"
+	if contents, err := ioutil.ReadFile(filename); err != nil {
+		fmt.Println(contents)
+	} else {
+		fmt.Println(err)
+	}
+}
+
+func bounded(v int) int {
+	if v > 100 {
+		return 100
+	} else if v < 0 {
+		return 0
+	} else {
+		return v
+	}
 }
 
 /*
  * 常变量定义部分
  */
-
 func enums() {
 	const (
 		azen = iota
