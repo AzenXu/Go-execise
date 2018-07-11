@@ -1,9 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"math"
+	"os"
+	"reflect"
+	"runtime"
+	"strconv"
 )
 
 var (
@@ -36,6 +41,89 @@ func main() {
 	//	条件语句
 	bounded(438)
 	fileRead()
+
+	//	循环语句
+	accumulate()
+	fmt.Println(convertToBin(4))
+	// printFile("none")
+	forever()
+
+	//	函数
+	result, _ := div(10, 7)
+	fmt.Println(result)
+	fmt.Println(
+		apply(func(a, b int) int {
+			return a + b
+		}, 10, 20),
+	)
+}
+
+/*
+ * 函数
+ */
+
+func sum(numbers ...int) int {
+	result := 0
+	for i := range numbers {
+		result += numbers[i]
+	}
+	return result
+}
+
+func apply(op func(a, b int) int, a, b int) (result int) {
+	p := reflect.ValueOf(op).Pointer()
+	opName := runtime.FuncForPC(p).Name()
+	fmt.Println(opName)
+	return op(a, b)
+}
+
+func div(a, b int) (q, r int) {
+	return a / b, a % b
+}
+
+func divNoRecommend(a, b int) (q, r int) {
+	q = a / b
+	r = a % b
+	return
+}
+
+/*
+ * 循环语句
+ */
+func forever() {
+	for {
+		fmt.Println("Bilibili")
+	}
+}
+
+func printFile(filename string) {
+	file, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+
+	}
+}
+
+func convertToBin(number int) string {
+	result := ""
+	for ; number > 0; number /= 2 {
+		lsb := number % 2
+		result = strconv.Itoa(lsb) + result
+	}
+	return result
+}
+
+func accumulate() {
+	sum := 0
+	for i := 0; i < 100; i++ {
+		sum++
+	}
+	fmt.Println(sum)
 }
 
 /*
