@@ -56,6 +56,24 @@ func main() {
 			return a + b
 		}, 10, 20),
 	)
+
+	//	指针
+	pointerDefine()
+
+}
+
+/*
+ * 指针
+ */
+func swap(a, b *int) {
+	*a, *b = *b, *a
+}
+
+func pointerDefine() {
+	var a = 0
+	var pa *int = &a
+	*pa = 0x66CCFF
+	fmt.Println(a)
 }
 
 /*
