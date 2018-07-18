@@ -12,6 +12,17 @@ type Retriever interface {
 	Get(url string) string
 }
 
+// Poster 发送
+type Poster interface {
+	Post(url string) string
+}
+
+// RetrieverPoster 既Retriever又Poster
+type RetrieverPoster interface {
+	Retriever
+	Poster
+}
+
 func main() {
 
 	inspectTest()
