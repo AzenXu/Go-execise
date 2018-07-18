@@ -12,12 +12,24 @@ type Node struct {
 
 func main() {
 	//	结构体和方法
-	// structInit()
-	// structSlice()
+	structInit()
+	structSlice()
 	node := createNode("")
-	// node.print()
-	// nilPointerOperate()
-	node.traverse()
+	node.print()
+	nilPointerOperate()
+	traverseTest()
+}
+
+func traverseTest() {
+	root := createNode("root")
+	root.left = &Node{data: "left"}
+	root.left.right = &Node{data: "left-right"}
+
+	root.right = &Node{data: "right"}
+	root.right.left = &Node{data: "right-left"}
+	root.right.right = &Node{data: "right-right"}
+
+	root.traverse()
 }
 
 func (node *Node) traverse() {
