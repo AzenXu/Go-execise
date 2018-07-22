@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	rootUrl := "/list/"
+	rootUrl := "/"
 	http.HandleFunc(rootUrl, filelisting.ErrWrapper(filelisting.HandleFileList))
 
 	err := http.ListenAndServe(":8888", nil)
