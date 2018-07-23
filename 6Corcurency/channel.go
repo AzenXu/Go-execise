@@ -1,20 +1,101 @@
 package main
 
 import (
-	"fmt"
-	"time"
 	"github.com/gpmgo/gopm/modules/log"
+	"time"
+	"fmt"
+	"math/rand"
 )
 
 func main() {
+	// - 语法部分 -
 	//chanRight()
 	//channelAsParam()
 	//channelMuchMoreWorker()
 	//bufferedChannelDemo()
 	//closeChannel()
-	workerCloseRangeDemo()
+	//workerCloseRangeDemo()
+
+	// - 示例部分 -
+	//workerItemTest()
+
+	// - Select部分 -
+	selectDemo()
 }
 
+func generator() chan int {
+	channel := make(chan int)
+
+	go func() {
+		i := 0
+		for {
+			fmt.Println("准备入睡...")
+			time.Sleep(time.Duration(rand.Intn(15000)) * time.Millisecond)
+			fmt.Println("帅醒!!!准备发送!!!")
+			channel <- i
+			i++
+		}
+	}()
+
+	return channel
+}
+
+func selectDemo() {
+	c1, c2 := generator(), generator()
+
+	for {
+		select {
+		case n := <- c1:
+			fmt.Println("我是c1：", n)
+		case n := <- c2:
+			fmt.Println("我是c2：", n)
+		}
+	}
+}
+
+func workerItemTest() {
+	var workerItems [10]workerItem
+	for i := 0; i < 10; i++ {
+		workerItems[i] = createWorkerItem(i)
+	}
+
+	for i := 0; i < 10; i++ {
+		workerItems[i].in <- 'a' + i
+		<-workerItems[i].done
+	}
+
+	for i := 0; i < 10; i++ {
+		workerItems[i].in <- 'A' + i
+		<-workerItems[i].done
+	}
+}
+
+type workerItem struct {
+	in chan int
+	done chan bool
+}
+
+func createWorkerItem(id int) workerItem {
+	 w := workerItem {
+		in: make(chan int),
+		done: make(chan  bool),
+	}
+
+	go doWorkerItem(id, w)
+
+	return w
+}
+
+func doWorkerItem(id int, worker workerItem) {
+	for n := range worker.in {
+		log.Warn("ID是%d的worker，收到了一个%c", id, n)
+		go func() {worker.done <- true}()
+	}
+}
+
+/**
+语法部分
+*/
 func createWorker(id int) chan<- int {
 	channel := make(chan int)
 	go worker(id, channel)
