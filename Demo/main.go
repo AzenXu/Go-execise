@@ -18,7 +18,16 @@ func main() {
 
 	//regexFullTextTest()
 	//regexUseSimble()
-	regexPickUp()
+	//regexPickUp()
+	pickUpCitysDemo()
+}
+
+func pickUpCitysDemo() {
+	const demoText = `<a href="http://www.zhenai.com/zhenghun/aba" class="">阿坝</a>`
+
+	regexp := regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[a-z]+)" [^>]*>([^<]+)</a>`)
+	results := regexp.FindAllStringSubmatch(demoText, -1)
+	fmt.Println(results)
 }
 
 func regexPickUp() {
