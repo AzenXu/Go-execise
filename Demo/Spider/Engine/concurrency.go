@@ -51,7 +51,6 @@ func worker(r Request) (items []Item) {
 
 	if err != nil {
 		log.Error(err.Error())
-		panic(err)
 	}
 
 	return r.ParasFunc(result)
