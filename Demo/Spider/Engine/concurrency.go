@@ -3,29 +3,47 @@ package engine
 import (
 	"daker.wang/Azen/Go-execise/Demo/Spider/Fetcher"
 	"github.com/gpmgo/gopm/modules/log"
-	"fmt"
 )
 
+type Scheduler interface {
+	Submit(request Request)
+	GetRequsetChannel() (requestChannel chan Request)
+}
+
 type Concurrency struct {
-	queue []Request
+	Scheduler Scheduler
+	WorkerCount int
 }
 
 func (engine *Concurrency) Run(seeds ...Request) {
-	engine.queue = append(engine.queue, seeds...)
 
-	for len(engine.queue) > 0  {
+	requestChannel := engine.Scheduler.GetRequsetChannel()
+	resultsOutChannel := make(chan []Item)
 
-		r := engine.queue[0]
-		engine.queue = engine.queue[1:]
+	for i := 0; i < engine.WorkerCount; i++ {
+		createWork(requestChannel, resultsOutChannel)
+	}
 
-		items := worker(r)
+	for i := 0; i < len(seeds); i++ {
+		r := seeds[i]
+		engine.Scheduler.Submit(r)
+	}
 
-		for i :=0; i < len(items); i++  {
-			item := items[i]
-			fmt.Println(item.Name)
-			engine.queue = append(engine.queue, item.Request)
+	for {
+		results := <- resultsOutChannel
+		for _, result := range results {
+			engine.Scheduler.Submit(result.Request)
 		}
 	}
+}
+
+func createWork(requestChannel chan Request, itemsOut chan []Item) {
+	go func() {
+		for {
+			r := <-requestChannel
+			itemsOut <- worker(r)
+		}
+	}()
 }
 
 func worker(r Request) (items []Item) {

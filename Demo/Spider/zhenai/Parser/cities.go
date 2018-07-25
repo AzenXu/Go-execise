@@ -11,7 +11,6 @@ var citiesre = regexp.MustCompile(`<a href="(http://www.zhenai.com/zhenghun/[0-9
 func PickUpCitys(content []byte) (items []engine.Item) {
 	matches := citiesre.FindAllSubmatch(content, -1)
 
-	i := 0
 	for _, m := range matches {
 		items = append(items, engine.Item {
 			Name: string(m[2]),
