@@ -13,7 +13,7 @@ import (
 )
 
 func Fetch(URL string) (result []byte, err error) {
-	resp, err := http.Get(URL)
+	resp, err := LoadURL(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +34,17 @@ func Fetch(URL string) (result []byte, err error) {
 	}
 
 	return result, nil
+}
+
+func LoadURL(URL string) (resp *http.Response, err error)  {
+	request, err := http.NewRequest(http.MethodGet, URL, nil)
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36")
+
+	return http.DefaultClient.Do(request)
 }
 
 // 判断传入Reader的编码格式

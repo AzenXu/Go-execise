@@ -5,6 +5,7 @@ import (
 	"daker.wang/Azen/Go-execise/Demo/Spider/Engine"
 	"strconv"
 	"daker.wang/Azen/Go-execise/Demo/Spider/Model"
+	"fmt"
 )
 
 var ageRe = regexp.MustCompile(
@@ -80,14 +81,11 @@ func PickUpPersonInfo(contents []byte, name string) (items []engine.Item) {
 	items = []engine.Item{
 		{
 			Name:profile,
-			Request:engine.Request{
-				URL:"",
-				ParasFunc: func(bytes []byte) []engine.Item {
-					return nil
-				},
-			},
+			Request:engine.Request{},
 		},
 	}
+
+	fmt.Println(items)
 
 	return items
 }

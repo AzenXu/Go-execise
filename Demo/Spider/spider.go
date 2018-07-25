@@ -9,6 +9,23 @@ import (
 func main() {
 	//runSimpleEngine()
 	runConcurrencyEngine()
+	//customFetchTest()
+}
+
+func customFetchTest() {
+	var concurrencyEngine = engine.Concurrency{
+		Scheduler:&scheduler.SimpleScheduler{
+			RequestChannel:make(chan engine.Request),
+		},
+		WorkerCount:10,
+	}
+
+	concurrencyEngine.Run(engine.Request{
+		URL:"http://album.zhenai.com/u/107909110",
+		ParasFunc: func(bytes []byte) []engine.Item {
+			return parser.PickUpPersonInfo(bytes, "姬无病")
+		},
+	})
 }
 
 func runConcurrencyEngine() {
@@ -18,6 +35,7 @@ func runConcurrencyEngine() {
 		},
 		WorkerCount:10,
 	}
+
 	concurrencyEngine.Run(engine.Request{
 		URL:"http://www.zhenai.com/zhenghun",
 		ParasFunc: parser.PickUpCitys,
