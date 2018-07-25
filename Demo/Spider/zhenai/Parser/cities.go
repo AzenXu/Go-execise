@@ -23,10 +23,6 @@ func PickUpCitys(content []byte) (items []engine.Item) {
 
 		fmt.Printf("City: %s,URL: %s\n", m[2], m[1])
 		fmt.Println()
-		if i > 1 {
-			break
-		}
-		i++
 	}
 	fmt.Println(len(matches))
 

@@ -13,10 +13,6 @@ import (
 )
 
 func Fetch(URL string) (result []byte, err error) {
-	return loadHtml(URL)
-}
-
-func loadHtml(URL string) (result []byte, err error) {
 	resp, err := http.Get(URL)
 	if err != nil {
 		return nil, err
@@ -28,12 +24,11 @@ func loadHtml(URL string) (result []byte, err error) {
 		return nil, fmt.Errorf("被禁止了！wrong code is: %d", resp.StatusCode)
 	}
 
-	bodyReader := bufio.NewReader(resp.Body)
-
 	log.Warn(URL)
+
+	bodyReader := bufio.NewReader(resp.Body)
 	utf8Result := transform.NewReader(resp.Body, encodingJudgment(bodyReader).NewDecoder())
 	result, err =  ioutil.ReadAll(utf8Result)
-
 	if err != nil {
 		return nil, err
 	}
