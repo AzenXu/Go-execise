@@ -33,15 +33,34 @@ func (engine *Queue) Run(seeds ...Request) {
 		engine.Scheduler.Submit(r)
 	}
 
+
 	for {
 		results := <- resultsOutChannel
 		for _, result := range results {
-			if len(result.Request.URL) <= 0 { // 不是一个有效URL则抛弃
+			if !legalTask(result.Request) { // 不是一个有效URL则抛弃
 				continue
 			}
+
+			URLMap[result.Request.URL] = true
 			engine.Scheduler.Submit(result.Request)
 		}
 	}
+}
+
+var URLMap = make(map[string]bool)
+
+func legalTask(task Request) bool {
+	if len(task.URL) <= 0 {
+		return false
+	}
+
+	_, ok := URLMap[task.URL]
+	if !ok {
+		return true
+	}
+
+	log.Error("拦截到一个重复URL - %v", task.URL)
+	return false
 }
 
 func createQueueWork(requestChannel chan Request, itemsOut chan []Item, scheduler QueueScheduler) {

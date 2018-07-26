@@ -9,8 +9,8 @@ import (
 func main() {
 	//runSimpleEngine()
 	//runConcurrencyEngine()
-	//customFetchTest()
-	runQueueEngine()
+	customFetchTest()
+	//runQueueEngine()
 }
 
 func runQueueEngine() {
@@ -33,9 +33,9 @@ func customFetchTest() {
 	}
 
 	concurrencyEngine.Run(engine.Request{
-		URL:"http://album.zhenai.com/u/107909110",
+		URL:"http://www.zhenai.com/zhenghun/changzhi",
 		ParasFunc: func(bytes []byte) []engine.Item {
-			return parser.PickUpPersonInfo(bytes, "姬无病")
+			return parser.PickUpPersons(bytes)
 		},
 	})
 }

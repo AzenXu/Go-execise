@@ -32,9 +32,10 @@ func (engine *Concurrency) Run(seeds ...Request) {
 	for {
 		results := <- resultsOutChannel
 		for _, result := range results {
-			if len(result.Request.URL) <= 0 { // 不是一个有效URL则抛弃
+			if !legalTask(result.Request) { // 不是一个有效URL则抛弃
 				continue
 			}
+			URLMap[result.Request.URL] = true
 			engine.Scheduler.Submit(result.Request)
 		}
 	}
