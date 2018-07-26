@@ -19,7 +19,7 @@ func main() {
 	//regexFullTextTest()
 	//regexUseSimble()
 	//regexPickUp()
-	pickUpCitysDemo()
+	//pickUpCitysDemo()
 }
 
 func pickUpCitysDemo() {

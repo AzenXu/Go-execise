@@ -8,8 +8,20 @@ import (
 
 func main() {
 	//runSimpleEngine()
-	runConcurrencyEngine()
+	//runConcurrencyEngine()
 	//customFetchTest()
+	runQueueEngine()
+}
+
+func runQueueEngine() {
+	queueEngine := engine.Queue{
+		Scheduler:&scheduler.QueueScheduler{},
+		WorkerCount:10,
+	}
+	queueEngine.Run(engine.Request{
+		URL:"http://www.zhenai.com/zhenghun",
+		ParasFunc: parser.PickUpCitys,
+	})
 }
 
 func customFetchTest() {

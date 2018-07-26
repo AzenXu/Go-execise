@@ -15,4 +15,3 @@ func (scheduler *SimpleScheduler) Submit(request engine.Request) {
 func (scheduler *SimpleScheduler) GetRequsetChannel() (requestChannel chan engine.Request) {
 	return scheduler.RequestChannel
 }
-
