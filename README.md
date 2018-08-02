@@ -7,15 +7,15 @@ master分支仅用作说明其他分支的内容，将不merage任何分支
 
 ## 分支说明
 ### 语法部分
-basic
-2-collection
-3-面向对象
-4-面向接口
-5-错误处理及资源管理
-6-并发
-7-语法结束
+- basic
+- 2-collection
+- 3-面向对象
+- 4-面向接口
+- 5-错误处理及资源管理
+- 6-并发
+- 7-语法结束
 ### 爬虫练习
-demo
-demo-concurrency
+- demo
+- demo-concurrency
 ### web流媒体
-stream
+- stream
