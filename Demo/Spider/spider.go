@@ -2,8 +2,8 @@ package main
 
 import (
 	"daker.wang/Azen/Go-execise/Demo/Spider/Engine"
-	"daker.wang/Azen/Go-execise/Demo/Spider/zhenai/Parser"
 	"daker.wang/Azen/Go-execise/Demo/Spider/Scheduler"
+	"daker.wang/Azen/Go-execise/Demo/Spider/zhenai/Parser"
 )
 
 func main() {
@@ -15,25 +15,25 @@ func main() {
 
 func runQueueEngine() {
 	queueEngine := engine.Queue{
-		Scheduler:&scheduler.QueueScheduler{},
-		WorkerCount:10,
+		Scheduler:   &scheduler.QueueScheduler{},
+		WorkerCount: 10,
 	}
 	queueEngine.Run(engine.Request{
-		URL:"http://www.zhenai.com/zhenghun",
+		URL:       "http://www.zhenai.com/zhenghun",
 		ParasFunc: parser.PickUpCitys,
 	})
 }
 
 func customFetchTest() {
 	var concurrencyEngine = engine.Concurrency{
-		Scheduler:&scheduler.SimpleScheduler{
-			RequestChannel:make(chan engine.Request),
+		Scheduler: &scheduler.SimpleScheduler{
+			RequestChannel: make(chan engine.Request),
 		},
-		WorkerCount:10,
+		WorkerCount: 10,
 	}
 
 	concurrencyEngine.Run(engine.Request{
-		URL:"http://www.zhenai.com/zhenghun/changzhi",
+		URL: "http://www.zhenai.com/zhenghun/changzhi",
 		ParasFunc: func(bytes []byte) []engine.Item {
 			return parser.PickUpPersons(bytes)
 		},
@@ -42,14 +42,14 @@ func customFetchTest() {
 
 func runConcurrencyEngine() {
 	var concurrencyEngine = engine.Concurrency{
-		Scheduler:&scheduler.SimpleScheduler{
-			RequestChannel:make(chan engine.Request),
+		Scheduler: &scheduler.SimpleScheduler{
+			RequestChannel: make(chan engine.Request),
 		},
-		WorkerCount:10,
+		WorkerCount: 10,
 	}
 
 	concurrencyEngine.Run(engine.Request{
-		URL:"http://www.zhenai.com/zhenghun",
+		URL:       "http://www.zhenai.com/zhenghun",
 		ParasFunc: parser.PickUpCitys,
 	})
 }
@@ -57,7 +57,7 @@ func runConcurrencyEngine() {
 func runSimpleEngine() {
 	var simpleEngine = new(engine.SimpleEngine)
 	simpleEngine.Run(engine.Request{
-		URL:"http://www.zhenai.com/zhenghun",
+		URL:       "http://www.zhenai.com/zhenghun",
 		ParasFunc: parser.PickUpCitys,
 	})
 }

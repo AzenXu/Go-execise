@@ -13,7 +13,7 @@ type QueueScheduler interface {
 }
 
 type Queue struct {
-	Scheduler QueueScheduler
+	Scheduler   QueueScheduler
 	WorkerCount int
 }
 
@@ -33,9 +33,8 @@ func (engine *Queue) Run(seeds ...Request) {
 		engine.Scheduler.Submit(r)
 	}
 
-
 	for {
-		results := <- resultsOutChannel
+		results := <-resultsOutChannel
 		for _, result := range results {
 			if !legalTask(result.Request) { // 不是一个有效URL则抛弃
 				continue

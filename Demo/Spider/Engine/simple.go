@@ -13,7 +13,7 @@ type SimpleEngine struct {
 func (engine *SimpleEngine) Run(seeds ...Request) {
 	engine.queue = append(engine.queue, seeds...)
 
-	for len(engine.queue) > 0  {
+	for len(engine.queue) > 0 {
 
 		r := engine.queue[0]
 		engine.queue = engine.queue[1:]
@@ -26,7 +26,7 @@ func (engine *SimpleEngine) Run(seeds ...Request) {
 
 		items := r.ParasFunc(result)
 
-		for i :=0; i < len(items); i++  {
+		for i := 0; i < len(items); i++ {
 			item := items[i]
 			fmt.Println(item.Name)
 			engine.queue = append(engine.queue, item.Request)

@@ -9,7 +9,7 @@ type SimpleScheduler struct {
 }
 
 func (scheduler *SimpleScheduler) Submit(request engine.Request) {
-	go func() {scheduler.RequestChannel <- request}()
+	go func() { scheduler.RequestChannel <- request }()
 }
 
 func (scheduler *SimpleScheduler) GetRequsetChannel() (requestChannel chan engine.Request) {

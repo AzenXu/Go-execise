@@ -11,7 +11,7 @@ type Scheduler interface {
 }
 
 type Concurrency struct {
-	Scheduler Scheduler
+	Scheduler   Scheduler
 	WorkerCount int
 }
 
@@ -30,7 +30,7 @@ func (engine *Concurrency) Run(seeds ...Request) {
 	}
 
 	for {
-		results := <- resultsOutChannel
+		results := <-resultsOutChannel
 		for _, result := range results {
 			if !legalTask(result.Request) { // 不是一个有效URL则抛弃
 				continue

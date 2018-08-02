@@ -1,9 +1,9 @@
 package fetcher
 
 import (
-	"testing"
 	"fmt"
 	"github.com/gpmgo/gopm/modules/log"
+	"testing"
 )
 
 const testURL = "http://album.zhenai.com/u/1545542317"

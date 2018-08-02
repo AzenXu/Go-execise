@@ -1,11 +1,11 @@
 package parser
 
 import (
-	"regexp"
 	"daker.wang/Azen/Go-execise/Demo/Spider/Engine"
-	"strconv"
 	"daker.wang/Azen/Go-execise/Demo/Spider/Model"
 	"fmt"
+	"regexp"
+	"strconv"
 )
 
 var ageRe = regexp.MustCompile(
@@ -80,8 +80,8 @@ func PickUpPersonInfo(contents []byte, name string) (items []engine.Item) {
 
 	items = []engine.Item{
 		{
-			Name:profile,
-			Request:engine.Request{},
+			Name:    profile,
+			Request: engine.Request{},
 		},
 	}
 

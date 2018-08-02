@@ -6,11 +6,10 @@ import (
 )
 
 type QueueScheduler struct {
-
 	workerInputChannel chan chan engine.Request
-	taskInputChannel chan engine.Request
+	taskInputChannel   chan engine.Request
 
-	tasks []engine.Request
+	tasks   []engine.Request
 	workers []chan engine.Request
 }
 
@@ -46,9 +45,9 @@ func (scheduler *QueueScheduler) Run() {
 			}
 
 			select {
-			case worker := <- scheduler.workerInputChannel:
+			case worker := <-scheduler.workerInputChannel:
 				scheduler.workers = append(scheduler.workers, worker)
-			case task := <- scheduler.taskInputChannel:
+			case task := <-scheduler.taskInputChannel:
 				scheduler.tasks = append(scheduler.tasks, task)
 			case nextWorker <- nextTask:
 				scheduler.tasks = scheduler.tasks[1:]
@@ -69,9 +68,9 @@ func (scheduler *QueueScheduler) Remove(request engine.Request) {
 
 func (scheduler *QueueScheduler) StopWorker(worker chan engine.Request) {
 	/*
-	有两个思路控制task：
-	1. 传特殊的request（控制request）进来，worker检测到这种request，就在for循环中return掉
-	2. 在插一根管儿，这根管专门发控制信号 - 停止、快一点、慢一点、中断任务处理
+		有两个思路控制task：
+		1. 传特殊的request（控制request）进来，worker检测到这种request，就在for循环中return掉
+		2. 在插一根管儿，这根管专门发控制信号 - 停止、快一点、慢一点、中断任务处理
 	*/
 	panic("待实现")
 }

@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"golang.org/x/text/encoding"
-	"golang.org/x/net/html/charset"
-	"io"
 	"bufio"
-	"net/http"
-	"golang.org/x/text/transform"
-	"io/ioutil"
-	"regexp"
+	"fmt"
 	"github.com/gpmgo/gopm/modules/log"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/transform"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"regexp"
 )
 
 func main() {
@@ -70,7 +70,7 @@ func loadHtml() {
 
 	utf8Result := transform.NewReader(resp.Body, encodingJudgment(resp.Body).NewDecoder())
 
-	result, err :=  ioutil.ReadAll(utf8Result)
+	result, err := ioutil.ReadAll(utf8Result)
 	if err != nil {
 		panic(err)
 	}

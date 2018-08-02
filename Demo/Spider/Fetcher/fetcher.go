@@ -1,15 +1,15 @@
 package fetcher
 
 import (
-	"net/http"
+	"bufio"
+	"fmt"
+	"github.com/gpmgo/gopm/modules/log"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/unicode"
 	"golang.org/x/text/transform"
 	"io/ioutil"
-	"golang.org/x/text/encoding"
-	"bufio"
-	"github.com/gpmgo/gopm/modules/log"
-	"golang.org/x/text/encoding/unicode"
-	"golang.org/x/net/html/charset"
-	"fmt"
+	"net/http"
 )
 
 func Fetch(URL string) (result []byte, err error) {
@@ -28,7 +28,7 @@ func Fetch(URL string) (result []byte, err error) {
 
 	bodyReader := bufio.NewReader(resp.Body)
 	utf8Result := transform.NewReader(resp.Body, encodingJudgment(bodyReader).NewDecoder())
-	result, err =  ioutil.ReadAll(utf8Result)
+	result, err = ioutil.ReadAll(utf8Result)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func Fetch(URL string) (result []byte, err error) {
 	return result, nil
 }
 
-func LoadURL(URL string) (resp *http.Response, err error)  {
+func LoadURL(URL string) (resp *http.Response, err error) {
 	request, err := http.NewRequest(http.MethodGet, URL, nil)
 	if err != nil {
 		log.Error(err.Error())
