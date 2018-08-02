@@ -10,6 +10,8 @@
 - 不merage任何分支
 - 新开孤儿分支从master的最新提交处拉取
 
+![分支管理示意图](http://img.daker.wang/wiki/1533178241862.png)
+
 ## 其他分支说明
 ### 语法部分
 - basic
