@@ -37,14 +37,28 @@ func Regist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
-	//TODO:登录@Azen
+	//TODO:分配session并返回resp@Azen
 	log.Warn("注册成功，username: %v, pwd: %v", user.Username, user.Pwd)
 }
 
-func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params){
-
+func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	//  拿到用户名和密码
+	//  通过用户名获取数据库中的密码
+	//  密码比较
+	//  分配session并返回resp
 }
 
-func LoadUserInfo(w http.ResponseWriter, r *http.Request, params httprouter.Params){}
+func LoadUserInfo(w http.ResponseWriter, r *http.Request, params httprouter.Params){
+	//  通过用户名拿到用户
+	//  返回用户信息
+}
 
-func Destory(w http.ResponseWriter, r *http.Request, params httprouter.Params){}
+func Logout(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	//  通过sessionID删除session
+}
+
+func Destory(w http.ResponseWriter, r *http.Request, params httprouter.Params){
+	//  Logout
+	//  SessionID拿到用户ID
+	//  删除用户
+}
