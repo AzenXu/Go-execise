@@ -6,6 +6,7 @@ import (
 	"database/sql"
 )
 
+//  users
 func Regist(username string, pwd string) (*defs.UserCredential, error) {
 	stmt, err := db.Prepare(`INSERT INTO users (login_name, pwd) VALUES (?,?)`)
 	defer stmt.Close()
@@ -24,10 +25,25 @@ func Regist(username string, pwd string) (*defs.UserCredential, error) {
 	return uc, nil
 }
 
+func QueryPwd(username string) (pwd string, e error) {
+	stmt, e := db.Prepare(`SELECT pwd FROM users WHERE login_name = ?`)
+	if e != nil {
+		log.Error(e.Error())
+		return "", e
+	}
+
+	err := stmt.QueryRow(username).Scan(&pwd); if err != nil {
+		log.Error(e.Error())
+		return "", e
+	}
+
+	return pwd, nil
+}
+
 //  session
 func SelectSession(loginName string) (session *defs.Session, e error) {
 	session = &defs.Session{}
-	session.SessionID = loginName
+	session.UserName = loginName
 
 	stmt, e := db.Prepare(`SELECT TTL, session_id FROM sessions WHERE login_name = ?`)
 	if e != nil {
@@ -36,6 +52,25 @@ func SelectSession(loginName string) (session *defs.Session, e error) {
 	}
 
 	err := stmt.QueryRow(loginName).Scan(&session.TTL, &session.SessionID)
+	if err != nil {
+		log.Error(err.Error())
+		return nil, err
+	}
+
+	return session, nil
+}
+
+func SelectSessionFromSid(sid string) (session *defs.Session, e error) {
+	session = &defs.Session{}
+	session.SessionID = sid
+
+	stmt, e := db.Prepare(`SELECT TTL, login_name FROM sessions WHERE session_id = ?`)
+	if e != nil {
+		log.Error(e.Error())
+		return nil, e
+	}
+
+	err := stmt.QueryRow(sid).Scan(&session.TTL, &session.UserName)
 	if err != nil {
 		log.Error(err.Error())
 		return nil, err

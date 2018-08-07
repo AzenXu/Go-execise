@@ -12,11 +12,38 @@ import (
 var sessions *sync.Map // sessions缓存
 
 func init() {
-	sessions = &sync.Map{}
+	sessions = &sync.Map{} // key: sid value: session
 }
 
-func LoadSessionsFromDB() {
+func loadSessionsFromDB(sid string) *defs.Session {
+	session, err := dbops.SelectSessionFromSid(sid); if err != nil {
+		log.Error(err.Error())
+		return nil
+	}
+	return session
+}
 
+func loadSessionFromCache(sid string) *defs.Session {
+	session, ok := sessions.Load(sid); if !ok {
+		return nil
+	}
+
+	return session.(*defs.Session)
+}
+
+func loadSession(sid string) (session *defs.Session) {
+	session = loadSessionFromCache(sid)
+	if session != nil {
+		return session
+	}
+
+	session = loadSessionsFromDB(sid)
+	if session != nil {
+		sessions.Store(session.SessionID, session)
+		return session
+	}
+
+	return nil
 }
 
 // sessions
@@ -35,8 +62,21 @@ func GenerateSession(username string) (session *defs.Session) {
 	return session
 }
 
+func IsSessionExpired(sid string) (ok bool) {
+	session := loadSession(sid)
+	if session == nil {
+		return false
+	}
+
+	if session.TTL < int64(utils.CurrentTimestampSec()) {
+		return false
+	}
+
+	return true
+}
+
 func updateSession(session defs.Session) {
-	sessions.Store(session.SessionID, session.UserName)
+	sessions.Store(session.SessionID, session)
 	_, e := dbops.SelectSession(session.SessionID)
 	if e == sql.ErrNoRows {
 		dbops.RegistSession(session)

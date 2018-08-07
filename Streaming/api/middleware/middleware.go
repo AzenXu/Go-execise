@@ -3,6 +3,8 @@ package middleware
 import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"log"
+	"daker.wang/Azen/Go-execise/Streaming/api/middleware/auth"
 )
 
 type MiddleWare struct {
@@ -17,10 +19,13 @@ func New(router *httprouter.Router) *MiddleWare {
 
 func (m *MiddleWare) ServeHTTP(w http.ResponseWriter, re *http.Request) {
 
-	//  鉴权
+	result := auth.ValidateSession(re)
+	log.Println("鉴权：结果为：", result)
 
 	m.r.ServeHTTP(w, re)
 }
+
+
 
 
 

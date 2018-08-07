@@ -38,22 +38,46 @@ func Regist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
-	s := defs.SessionResult{ SessionID: session.GenerateSession(user.Username).SessionID, OK: true }
-	ss, err := json.Marshal(s)
-	if err != nil {
-		log.Error("解码出错 - %v", err)
-	}
+	ss := session.GenerateSession(user.Username)
 
-	response.SendNormalResponse(w, string(ss), http.StatusOK)
+	responseSessionOK(w, ss.SessionID)
 
 	log.Warn("注册成功，username: %v, pwd: %v", user.Username, user.Pwd)
 }
 
 func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	//  拿到用户名和密码
+	body, e := ioutil.ReadAll(r.Body); if e != nil {
+		log.Error(e.Error())
+		response.SendErrorResponse(w, defs.ErrorRequestBodyParseFailed)
+		return
+	}
+
+	var user *defs.UserCredential
+
+	err := json.Unmarshal(body, &user); if err != nil {
+		log.Error(err.Error())
+		response.SendErrorResponse(w, defs.ErrorInternalFaults)
+		return
+	}
+
 	//  通过用户名获取数据库中的密码
+	pwd, err := dbops.QueryPwd(user.Username); if err != nil {
+		log.Error(err.Error())
+		response.SendErrorResponse(w, defs.ErrorDBError)
+		return
+	}
+
 	//  密码比较
+	if pwd != user.Pwd {
+		response.SendErrorResponse(w, defs.ErrorNotAuthUser)
+		log.Warn("密码错误 - %v", user)
+		return
+	}
 	//  分配session并返回resp
+	ss := session.GenerateSession(user.Username)
+
+	responseSessionOK(w, ss.SessionID)
 }
 
 func LoadUserInfo(w http.ResponseWriter, r *http.Request, params httprouter.Params){
@@ -69,4 +93,15 @@ func Destory(w http.ResponseWriter, r *http.Request, params httprouter.Params){
 	//  Logout
 	//  SessionID拿到用户ID
 	//  删除用户
+}
+
+func responseSessionOK(w http.ResponseWriter, sid string) {
+	s := defs.SessionResult{ SessionID: sid, OK: true }
+	ss, err := json.Marshal(s)
+	if err != nil {
+		log.Error("解码出错 - %v", err)
+		return
+	}
+
+	response.SendNormalResponse(w, string(ss), http.StatusOK)
 }
