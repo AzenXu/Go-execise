@@ -22,6 +22,12 @@ type ErrorResponse struct {
 type Session struct {
 	SessionID string `json:"session_id"`
 	TTL int64 `json:"TTL"`
+	UserName string `json:"login_name"`
+}
+
+type SessionResult struct {
+	SessionID string `json:"session_id"`
+	OK bool `string:"status"`
 }
 
 var (

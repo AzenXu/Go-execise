@@ -9,6 +9,7 @@ import (
 	"daker.wang/Azen/Go-execise/Streaming/api/defs"
 	"daker.wang/Azen/Go-execise/Streaming/api/response"
 	"daker.wang/Azen/Go-execise/Streaming/api/dbops"
+	"daker.wang/Azen/Go-execise/Streaming/api/session"
 )
 
 func Regist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -37,7 +38,14 @@ func Regist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
-	//TODO:分配session并返回resp@Azen
+	s := defs.SessionResult{ SessionID: session.GenerateSession(user.Username).SessionID, OK: true }
+	ss, err := json.Marshal(s)
+	if err != nil {
+		log.Error("解码出错 - %v", err)
+	}
+
+	response.SendNormalResponse(w, string(ss), http.StatusOK)
+
 	log.Warn("注册成功，username: %v, pwd: %v", user.Username, user.Pwd)
 }
 
