@@ -24,6 +24,7 @@ func(l *Limiter) GetToken() (ok bool) {
 		return false
 	}
 
+	log.Warn("--- ❌ Dispatch a token ---")
 	l.TokenBucket <- 1
 
 	return true
@@ -35,5 +36,5 @@ func(l *Limiter) ReleaseToken() {
 	}
 
 	<- l.TokenBucket
-	log.Warn("Bucket got a empty token")
+	log.Warn("--- ✅ Bucket got a empty token ---")
 }

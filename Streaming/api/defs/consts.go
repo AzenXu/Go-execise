@@ -6,7 +6,7 @@ import (
 
 var (
 	SessionTTLs = 60 * 30 // 30 min
-	BucketCapacity  = 2
+	BucketCapacity  = 10
 )
 
 //  errors

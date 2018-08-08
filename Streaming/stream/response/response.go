@@ -8,7 +8,7 @@ import (
 
 func SendErrorResponse(w http.ResponseWriter, err defs.ErrorResponse) {
 	w.WriteHeader(err.HttpSC)
-	content := "我错了！！！555~~~" + err.Error.Content
+	content := "我是流媒体服务器，我错了！我再也不敢了~~ 555~~~" + err.Error.Content
 	io.WriteString(w, content)
 }
 

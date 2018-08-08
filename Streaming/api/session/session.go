@@ -5,7 +5,7 @@ import (
 	"daker.wang/Azen/Go-execise/Streaming/api/defs"
 	"daker.wang/Azen/Go-execise/Streaming/api/utils"
 	"github.com/gpmgo/gopm/modules/log"
-	"daker.wang/Azen/Go-execise/Streaming/api/dbops"
+	"daker.wang/Azen/Go-execise/dbops"
 	"database/sql"
 )
 

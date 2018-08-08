@@ -8,7 +8,7 @@ import (
 	"github.com/gpmgo/gopm/modules/log"
 	"daker.wang/Azen/Go-execise/Streaming/api/defs"
 	"daker.wang/Azen/Go-execise/Streaming/api/response"
-	"daker.wang/Azen/Go-execise/Streaming/api/dbops"
+	"daker.wang/Azen/Go-execise/dbops"
 	"daker.wang/Azen/Go-execise/Streaming/api/session"
 )
 
