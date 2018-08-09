@@ -5,7 +5,34 @@ import (
 	"fmt"
 )
 
-func Start(duration time.Duration, task func()) {
+type Worker struct {
+	engine *Engine
+	ticker *time.Ticker
+}
+
+func NewWorker(interval time.Duration, engine *Engine) *Worker {
+	return &Worker{
+		engine:engine,
+		ticker:time.NewTicker(interval),
+	}
+}
+
+func (w *Worker) startWork() {
+	for {
+		select {
+		case <- w.ticker.C:
+			go w.engine.StartAll()
+		}
+	}
+}
+
+func Start() {
+	eng := New(3, VideoClearDispatcher, VideoClearExecutor)
+	worker := NewWorker(5, eng)
+	go worker.startWork()
+}
+
+func StartOld(duration time.Duration, task func()) {
 	//  定时器怎么开？iOS里有NSTimer，Golang有木有类似的东东？查查文档
 	//  文档中的time包，有两个type：Time、Ticker
 	/*

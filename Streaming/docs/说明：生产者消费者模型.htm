@@ -1,0 +1,36 @@
+                    
+    
+                    
+    
+                    
+    
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>查看源</title>
+        <link rel="canonical" href="/pages/viewpage.action?pageId=$action.page.id" />
+        <script>
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};window.WRM._unparsedErrors=window.WRM._unparsedErrors||{};
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\u0022\u0022";
+if(window.WRM._dataArrived)window.WRM._dataArrived();</script>
+<link type="text/css" rel="stylesheet" href="/s/2c0c2d7d72cc7c2ca01f2d128c17ba76-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/77ab13f20b06a86822f65a4b03ead730/_/download/contextbatch/css/_super/batch.css" data-wrm-key="_super" data-wrm-batch-type="context" media="all">
+<!--[if lt IE 9]>
+<link type="text/css" rel="stylesheet" href="/s/2c0c2d7d72cc7c2ca01f2d128c17ba76-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/77ab13f20b06a86822f65a4b03ead730/_/download/contextbatch/css/_super/batch.css?conditionalComment=lt+IE+9" data-wrm-key="_super" data-wrm-batch-type="context" media="all">
+<![endif]-->
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/s/2c0c2d7d72cc7c2ca01f2d128c17ba76-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/77ab13f20b06a86822f65a4b03ead730/_/download/contextbatch/css/_super/batch.css?conditionalComment=lte+IE+9" data-wrm-key="_super" data-wrm-batch-type="context" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/s/d41d8cd98f00b204e9800998ecf8427e-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/5ab609d25a9fec8024a533602955476a/_/download/contextbatch/css/plugin.viewsource,-_super/batch.css" data-wrm-key="plugin.viewsource,-_super" data-wrm-batch-type="context" media="all">
+<link type="text/css" rel="stylesheet" href="/s/9904a304e0e1fcece251d588e573fd06-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/a62afd3066aa449ae3e7b4c6b12c6049/_/download/contextbatch/css/page,-_super/batch.css" data-wrm-key="page,-_super" data-wrm-batch-type="context" media="all">
+<link type="text/css" rel="stylesheet" href="/s/e640f5a969e61998a9decd46ed0418ff-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/fc66fd0cd9eed71ee897b1c97fc0df91/_/download/contextbatch/css/editor-content,-_super/batch.css?confluence.table.resizable=true&amp;confluence.view.edit.transition=true" data-wrm-key="editor-content,-_super" data-wrm-batch-type="context" media="all">
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/s/e640f5a969e61998a9decd46ed0418ff-CDN/zh_CN/7202/e97769bbf919c0bd667762fc102f557beacb7f94/fc66fd0cd9eed71ee897b1c97fc0df91/_/download/contextbatch/css/editor-content,-_super/batch.css?conditionalComment=lte+IE+9&amp;confluence.table.resizable=true&amp;confluence.view.edit.transition=true" data-wrm-key="editor-content,-_super" data-wrm-batch-type="context" media="all">
+<![endif]-->
+
+    </head>
+
+    <body class="mceContentBody aui-theme-default wiki-content fullsize">
+        <p>&nbsp;</p>         <p><img class="confluence-embedded-image confluence-external-resource" height="250" src="https://img-blog.csdn.net/20170219164734247?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvYml0X2NsZWFyb2Zm/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" data-image-src="https://img-blog.csdn.net/20170219164734247?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvYml0X2NsZWFyb2Zm/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"></p><p>（为什么）解决什么<a href="https://www.joyhwong.com/archives/827">问题</a>：</p><ol><li>若干个生产者线程和若干个消费者线程需要共享数据</li><li>生产者和消费者之间，可能有「产能差」</li><li>希望生产者和消费者之间「松耦合」</li></ol><h3>生产者和消费者模型必须具有的条件</h3><p style="text-align: justify;">用一句话概括，生产者消费者模型必须具有的条件是<span><strong>三种关系</strong>，<strong>两类角色</strong>，<strong>一类交易场所</strong></span>。 <br /><span>一类交易场所</span>：交易场所指的是生产者和消费者之间进行数据交换的仓库，这块仓库相当于一个缓冲区，生产者负责把数据放入到缓冲区中，消费者负责把缓冲区中的数据取出来； <br /><span>两类角色</span>：指的是生产者和消费者； <br /><span>三种关系</span>：三种关系分别指的是：消费者和消费者，生产者和生产者，生产者和消费者；其中消费者和消费者，生产者和生产者之间都属于竞争关系，生产者和消费者之间的关系相当于是一种食物链之间的依赖关系。</p><h3>生产者和消费者模型的特点</h3><ol><li style="list-style-type: decimal;">首先，生产者只需要关心“仓库”，并不需要关心具体的消费者。</li><li style="list-style-type: decimal;">对于消费者而言，它不需要关心具体的生产者，它只需要关心这个“仓库”中还有没有东西存在。</li><li style="list-style-type: decimal;">生产者生产的时候消费者不能进行“消费”，消费者消费的时候生产者不能生产，相当于一种互斥关系，即生产者和消费者一次只能有一人能访问到“仓库”。</li><li style="list-style-type: decimal;">“仓库”为空时不能进行消费。</li><li style="list-style-type: decimal;">“仓库”满时不能进行生产。</li></ol><p style="list-style-type: decimal;"><a href="https://blog.csdn.net/bit_clearoff/article/details/55805884">引文</a></p><p><br /></p><h3>生产者和消费者模型的好处</h3><p><span style="color: rgb(102,102,102);">生产者-消费者模式的核心组件是共享内存缓冲区，它作为生产者和消费者间的通信桥梁，避免了生产者和消费者的直接通信，从而将生产者和消费者进行解耦——</span><span style="color: rgb(102,102,102);">生产者不需要知道消费者的存在，消费者也不需要知道生产者的存在。</span></p><p><span style="color: rgb(102,102,102);">由于内存缓冲区的存在，允许生产者和消费者在执行速度上存在时间差，无论是生产者在某一局部时间内速度高于消费者，或者消费者在局部时间内高于生产者，都可以通过共享内存缓冲区得到缓解，确保系统正常运行</span></p>
+        <p>&nbsp;</p>
+    </body>
+</html>

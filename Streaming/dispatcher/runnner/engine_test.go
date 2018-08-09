@@ -15,7 +15,7 @@ func TestEngine_StartAll(t *testing.T) {
 		log.Warn("🎉 第%d次生产", indexd)
 		indexd++
 		for i := 0; i < 3; i++ {
-			go func(idx int) {
+			go func(idx int) { // 使用go程，是为了模拟生产者消费者模式中的，生产者并发模型
 				log.Warn("Dispatch - %d", idx)
 				data <- strconv.Itoa(idx)
 			}(i)
