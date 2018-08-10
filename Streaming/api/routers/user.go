@@ -29,6 +29,12 @@ func Regist(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		return
 	}
 
+	if len(user.Pwd) <= 0 || len(user.Username) <= 0 {
+		log.Error("用户名密码不完整")
+		response.SendErrorResponse(w, defs.ErrorNotAuthUser)
+		return
+	}
+
 	//  存数据库
 	_, err = dbops.Regist(user.Username, user.Pwd)
 

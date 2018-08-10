@@ -21,8 +21,10 @@ func requestAPI(b *ApiBody, w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	u, _ := url.Parse(b.Url)
-	u.Host = "http://localhost" + ":" + u.Port()
+	u.Host = "localhost" + ":" + u.Port()
 	newUrl := u.String()
+
+	log.Println("👻 准备转发请求，newURL:", newUrl, "Ori URL:", r.URL.RequestURI())
 
 	switch b.Method {
 	case http.MethodGet:
@@ -35,7 +37,10 @@ func requestAPI(b *ApiBody, w http.ResponseWriter, r *http.Request) {
 		}
 		normalResponse(w, resp)
 	case http.MethodPost:
-		req, _ := http.NewRequest("POST", newUrl, bytes.NewBuffer([]byte(b.ReqBody)))
+		req, err := http.NewRequest("POST", newUrl, bytes.NewBuffer([]byte(b.ReqBody)))
+		if err != nil {
+			log.Println(err)
+		}
 		req.Header = r.Header
 		resp, err = httpClient.Do(req)
 		if err != nil {
