@@ -4,7 +4,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"html/template"
-	"io"
 	"io/ioutil"
 	"encoding/json"
 	"net/http/httputil"
@@ -70,7 +69,19 @@ func homeHandler(writer http.ResponseWriter, request *http.Request, params httpr
 }
 
 func userHomeHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	io.WriteString(writer,"啊哟~ 又来了一只红血球...")
+	scookie, se := request.Cookie("session")
+	ucookie, ce := request.Cookie("username")
+
+	if se != nil || ce != nil || len(scookie.Value) <= 0 || len(ucookie.Value) <= 0 {
+		//  弹到注册页
+		http.Redirect(writer, request, "/", http.StatusFound)
+	} else {
+		//  弹到个人主页
+		temp, err := template.ParseFiles("./template/userhome.html"); if err != nil {
+			return
+		}
+		temp.Execute(writer, &HomePage{Name:"血小板"})
+	}
 }
 
 func aipHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {

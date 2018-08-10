@@ -84,3 +84,98 @@ function _signinUser(callback) {
         callback(data, null, username);
     });
 }
+
+//  callback(data, err)
+function _getUserId(username, callback) {
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/user/' + username,
+        'method': 'GET'
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                callback(null, "Internal Error");
+            }
+        },
+        complete: function (xhr, textStatus) {
+            if (xhr.status >= 400) {
+                callback(null, "Error of getUserId");
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        callback(data, null);
+    });
+}
+
+function _asyncGetUserId(username) {
+    let defer = $.Deferred();
+
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/user/' + username,
+        'method': 'GET'
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                console.log("Internal Error");
+                defer.reject("Internal Error");
+            }
+        },
+        complete: function (xhr, textStatus) {
+            if (xhr.status >= 400) {
+                console.log("Error of getUserId");
+                defer.reject("Error of getUserId");
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        console.log(data);
+        defer.resolve(data);
+    });
+
+    return defer.promise();
+}
+
+function _asyncListAllVideos(uid) {
+    let defer = $.Deferred();
+
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/user/' + uid + '/videos',
+        'method': 'GET',
+        'req_body': ''
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                defer.reject("Internal error");
+            }
+        },
+        complete: function (xhr, textStatus) {
+            if (xhr.status >= 400) {
+                defer.reject("Error of Sign in");
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        if (xhr.status >= 400) {
+            defer.reject("Error of Sign in");
+            return;
+        }
+        defer.resolve(data);
+    });
+
+    return defer.promise();
+}

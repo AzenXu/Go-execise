@@ -25,6 +25,21 @@ func Regist(username string, pwd string) (*defs.UserCredential, error) {
 	return uc, nil
 }
 
+func QueryUserID(username string) (uid string, e error) {
+	stmt, e := db.Prepare(`SELECT id FROM users WHERE login_name = ?`)
+	if e != nil {
+		log.Error(e.Error())
+		return "", e
+	}
+
+	e = stmt.QueryRow(username).Scan(&uid); if e != nil {
+		log.Error(e.Error())
+		return "", e
+	}
+
+	return uid, nil
+}
+
 func QueryPwd(username string) (pwd string, e error) {
 	stmt, e := db.Prepare(`SELECT pwd FROM users WHERE login_name = ?`)
 	if e != nil {
@@ -32,7 +47,7 @@ func QueryPwd(username string) (pwd string, e error) {
 		return "", e
 	}
 
-	err := stmt.QueryRow(username).Scan(&pwd); if err != nil {
+	e = stmt.QueryRow(username).Scan(&pwd); if e != nil {
 		log.Error(e.Error())
 		return "", e
 	}
@@ -113,4 +128,38 @@ func RegistSession(session defs.Session) (e error) {
 	}
 
 	return nil
+}
+
+//  videos
+func ListAllVideos(username string, from, to int) (videos []*defs.VideoInfo ,e error) {
+	stmtOut, e := db.Prepare(`SELECT video_info.id, video_info.author_id, video_info.name, video_info.display_ctime FROM video_info 
+		INNER JOIN users ON video_info.author_id = users.id
+		WHERE users.login_name = ? AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time <= FROM_UNIXTIME(?) 
+		ORDER BY video_info.create_time DESC`)
+	defer stmtOut.Close()
+
+	if e != nil {
+		log.Error(e.Error())
+		return nil, e
+	}
+
+	rows, e := stmtOut.Query(username, from, to); if e != nil {
+		log.Error(e.Error())
+		return nil, e
+	}
+
+	var res []*defs.VideoInfo
+
+	for rows.Next() {
+		var id, name, ctime string
+		var aid int
+		if err := rows.Scan(&id, &aid, &name, &ctime); err != nil {
+			return res, err
+		}
+
+		vi := &defs.VideoInfo{Id: id, AuthorId: aid, Name: name, DisplayCtime: ctime}
+		res = append(res, vi)
+	}
+
+	return res, nil
 }

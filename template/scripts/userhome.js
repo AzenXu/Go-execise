@@ -1,159 +1,150 @@
+let uid;
+
+let session = _getCookie('session');
+let username = _getCookie('username');
+
+let listedVideos;
+
+
 $(document).ready(function () {
-    //  「用户页」方法绑定
+    _initPage(() => {
+        console.log("ES6 也阔以哦")
+    });
+
     $("#upload").on('click', function () {
-        $("#uploadvideomodal").show();
+        $("#upload-video-modal").show();
     });
-
-    $("#uploadform").on('submit', function (e) {
-        e.preventDefault()
-        var vname = $('#vname').val();
-
-        _createVideo(vname, function (res, err) {
-            if (err != null) {
-                //window.alert('encounter an error when try to create video');
-                _popupErrorMsg('encounter an error when try to create video');
-                return;
-            }
-
-            var obj = JSON.parse(res);
-            var formData = new FormData();
-            formData.append('file', $('#inputFile')[0].files[0]);
-
-            //  上传视频
-            $.ajax({
-                url: 'http://' + window.location.hostname + ':8080/upload/' + obj['id'],
-                //url:'http://127.0.0.1:8080/upload/dbibi',
-                type: 'POST',
-                data: formData,
-                //headers: {'Access-Control-Allow-Origin': 'http://127.0.0.1:9000'},
-                crossDomain: true,
-                processData: false,  // tell jQuery not to process the data
-                contentType: false,  // tell jQuery not to set contentType
-                success: function (data) {
-                    console.log(data);
-                    $('#uploadvideomodal').hide();
-                    location.reload();
-                    //window.alert("hoa");
-                },
-                complete: function (xhr, textStatus) {
-                    if (xhr.status === 204) {
-                        window.alert("finish")
-                        return;
-                    }
-                    if (xhr.status === 400) {
-                        $("#uploadvideomodal").hide();
-                        _popupErrorMsg('file is too big');
-                        return;
-                    }
-                }
-
-            });
-        });
-    });
+    //
+    // $("#uploadform").on('submit', function (e) {
+    //     e.preventDefault()
+    //     var vname = $('#vname').val();
+    //
+    //     _createVideo(vname, function (res, err) {
+    //         if (err != null) {
+    //             //window.alert('encounter an error when try to create video');
+    //             _popupErrorMsg('encounter an error when try to create video');
+    //             return;
+    //         }
+    //
+    //         var obj = JSON.parse(res);
+    //         var formData = new FormData();
+    //         formData.append('file', $('#inputFile')[0].files[0]);
+    //
+    //         //  上传视频
+    //         $.ajax({
+    //             url: 'http://' + window.location.hostname + ':8080/upload/' + obj['id'],
+    //             //url:'http://127.0.0.1:8080/upload/dbibi',
+    //             type: 'POST',
+    //             data: formData,
+    //             //headers: {'Access-Control-Allow-Origin': 'http://127.0.0.1:9000'},
+    //             crossDomain: true,
+    //             processData: false,  // tell jQuery not to process the data
+    //             contentType: false,  // tell jQuery not to set contentType
+    //             success: function (data) {
+    //                 console.log(data);
+    //                 $('#uploadvideomodal').hide();
+    //                 location.reload();
+    //                 //window.alert("hoa");
+    //             },
+    //             complete: function (xhr, textStatus) {
+    //                 if (xhr.status === 204) {
+    //                     window.alert("finish")
+    //                     return;
+    //                 }
+    //                 if (xhr.status === 400) {
+    //                     $("#uploadvideomodal").hide();
+    //                     _popupErrorMsg('file is too big');
+    //                     return;
+    //                 }
+    //             }
+    //
+    //         });
+    //     });
+    // });
 
     $(".close").on('click', function () {
-        $("#uploadvideomodal").hide();
+        $("#upload-video-modal").hide();
     });
 
     $("#logout").on('click', function () {
-        setCookie("session", "", -1)
-        setCookie("username", "", -1)
+        _setCookie("session", "", -1);
+        _setCookie("username", "", -1);
     });
 
-
     $(".video-item").click(function () {
-        var url = 'http://' + window.location.hostname + ':9000/videos/' + this.id
-        var video = $("#curr-video");
+        let url = 'http://' + window.location.hostname + ':9000/videos/' + this.id;
+        let video = $("#curr-video");
         video[0].attr('src', url);
         video.load();
     });
 });
 
 function _initPage(callback) {
-    _getUserId(function (res, err) {
-        if (err != null) {
-            window.alert("Encountered error when loading user id");
-            return;
-        }
 
-        var obj = JSON.parse(res);
+    _asyncGetUserId(username).then(function (res) {
+        let obj = JSON.parse(res);
         uid = obj['id'];
-        //window.alert(obj['id']);
-
-        _listAllVideos(function (res, err) {
-            if (err != null) {
-                //window.alert('encounter an error, pls check your username or pwd');
-                _popupErrorMsg('encounter an error, pls check your username or pwd');
-                return;
-            }
-
-            var obj = JSON.parse(res);
-            listedVideos = obj['videos'];
-            obj['videos'].forEach(function (item, index) {
-                var ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
+        console.log("👻 uid: ", uid);
+        return _asyncListAllVideos(uid);
+    }, function (reason) {
+        console.log("🔪", reason);
+    }).then(function (res) {
+        let obj = JSON.parse(res);
+        console.log("👻 拿到videosInfo啦~", obj);
+        listedVideos = obj['videos'];
+        if (listedVideos !== null) {
+            obj['videos'].forEach(function (item) {
+                let ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
                 $("#items").append(ele);
             });
-            callback();
-        });
+        }
+    }, function (e) {
+        window.alert(e);
     });
-}
-
-function _htmlVideoListElement(vid, name, ctime) {
-    //  创建一个a标签，把所有元素都插到a标签里
-    var ele = $('<a/>', {
-        href: '#'
-    });
-    ele.append(
-        $('<video/>', {
-            width: '320',
-            height: '240',
-            poster: '/statics/img/preloader.jpg',
-            controls: true
-            //href: '#'
-        })
-    );
-    ele.append(
-        $('<div/>', {
-            text: name
-        })
-    );
-    ele.append(
-        $('<div/>', {
-            text: ctime
-        })
-    );
-
-
-    var res = $('<div/>', {
-        id: vid,
-        class: 'video-item'
-    }).append(ele);
-
-    res.append(
-        $('<button/>', {
-            id: 'del-' + vid,
-            type: 'button',
-            class: 'del-video-button',
-            text: 'Delete'
-        })
-    );
-
-    res.append(
-        $('<hr>', {
-            size: '2'
-        }).css('border-color', 'grey')
-    );
-
-    return res;
-}
-
-function _popupErrorMsg(msg) {
-    var x = document.getElementById("error-bar");
-    $("#error-bar").text(msg);
-    x.className = "show";
-    setTimeout(function () {
-        x.className = x.className.replace("show", "");
-    }, 2000);
+    // _asyncGetUserId(username).fail(function (e) {
+    //     window.alert(e);
+    // }).done(function (res) {
+    //     let obj = JSON.parse(res);
+    //     uid = obj['id'];
+    //     console.log("👻 uid: ", uid);
+    //
+    //     _asyncListAllVideos(uid).fail(function (e) {
+    //         window.alert(e);
+    //     }).done(function (res) {
+    //         let obj = JSON.parse(res);
+    //         listedVideos = obj['videos'];
+    //         obj['videos'].forEach(function (item) {
+    //             let ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
+    //             $("#items").append(ele);
+    //         });
+    //     })
+    // })
+    // _getUserId(function (res, err) {
+    //     if (err != null) {
+    //         window.alert("Encountered error when loading user id");
+    //         return;
+    //     }
+    //
+    //     let obj = JSON.parse(res);
+    //     uid = obj['id'];
+    //     console.log("👻 uid: ", uid);
+    //
+    //     _listAllVideos(function (res, err) {
+    //         if (err != null) {
+    //             //window.alert('encounter an error, pls check your username or pwd');
+    //             _popupErrorMsg('encounter an error, pls check your username or pwd');
+    //             return;
+    //         }
+    //
+    //         var obj = JSON.parse(res);
+    //         listedVideos = obj['videos'];
+    //         obj['videos'].forEach(function (item, index) {
+    //             var ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
+    //             $("#items").append(ele);
+    //         });
+    //         callback();
+    //     });
+    // });
 }
 
 function _listAllVideos(callback) {
@@ -184,33 +175,6 @@ function _listAllVideos(callback) {
             callback(null, "Error of Signin");
             return;
         }
-        callback(data, null);
-    });
-}
-
-function _getUserId(callback) {
-    var dat = {
-        'url': 'http://' + window.location.hostname + ':9000/user/' + uname,
-        'method': 'GET'
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal Error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of getUserId");
-                return;
-            }
-        }
-    }).done(function (data, statusText, xhr) {
         callback(data, null);
     });
 }

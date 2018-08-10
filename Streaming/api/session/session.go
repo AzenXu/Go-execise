@@ -28,7 +28,10 @@ func loadSessionFromCache(sid string) *defs.Session {
 		return nil
 	}
 
-	return session.(*defs.Session)
+	sm, ok := session.(defs.Session); if ok {
+		log.Warn("OK")
+	}
+	return &sm
 }
 
 func loadSession(sid string) (session *defs.Session) {

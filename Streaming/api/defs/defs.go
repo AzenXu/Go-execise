@@ -5,6 +5,11 @@ type UserCredential struct {
 	Pwd string `json:"pwd"`
 }
 
+type UserResult struct {
+	UserID string `json:"id"`
+	OK bool `json:"status"`
+}
+
 type Error struct {
 	Code string `json:"error_code"`
 	Content string `json:"error_content"`
@@ -24,4 +29,15 @@ type Session struct {
 type SessionResult struct {
 	SessionID string `json:"session_id"`
 	OK bool `string:"status"`
+}
+
+type VideosInfo struct {
+	Videos []*VideoInfo `json:"videos"`
+}
+
+type VideoInfo struct {
+	Id string `json:"id"`
+	AuthorId int `json:"author_id"`
+	Name string `json:"name"`
+	DisplayCtime string `json:"display_ctime"`
 }

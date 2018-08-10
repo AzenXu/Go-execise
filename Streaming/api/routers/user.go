@@ -88,7 +88,15 @@ func Login(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 
 func LoadUserInfo(w http.ResponseWriter, r *http.Request, params httprouter.Params){
 	//  通过用户名拿到用户
+	name := params.ByName("username")
+	uid, e := dbops.QueryUserID(name); if e != nil {
+		log.Error(e.Error())
+		response.SendErrorResponse(w, defs.ErrorDBError)
+		return
+	}
 	//  返回用户信息
+	log.Warn("👻 拿到了uid %v", uid)
+	responseUIDOK(w, uid)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -110,4 +118,15 @@ func responseSessionOK(w http.ResponseWriter, sid string) {
 	}
 
 	response.SendNormalResponse(w, string(ss), http.StatusOK)
+}
+
+func responseUIDOK(w http.ResponseWriter, uid string) {
+	ur := defs.UserResult{ UserID: uid, OK: true }
+	urj, err := json.Marshal(ur)
+	if err != nil {
+		log.Error("解码出错 - %v", err)
+		return
+	}
+
+	response.SendNormalResponse(w, string(urj), http.StatusOK)
 }
