@@ -4,6 +4,8 @@ import (
 	"daker.wang/Azen/Go-execise/Streaming/api/defs"
 	"github.com/gpmgo/gopm/modules/log"
 	"database/sql"
+	"daker.wang/Azen/Go-execise/Streaming/api/utils"
+	"time"
 )
 
 //  users
@@ -132,9 +134,10 @@ func RegistSession(session defs.Session) (e error) {
 
 //  videos
 func ListAllVideos(username string, from, to int) (videos []*defs.VideoInfo ,e error) {
+	//AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time <= FROM_UNIXTIME(?)
 	stmtOut, e := db.Prepare(`SELECT video_info.id, video_info.author_id, video_info.name, video_info.display_ctime FROM video_info 
 		INNER JOIN users ON video_info.author_id = users.id
-		WHERE users.login_name = ? AND video_info.create_time > FROM_UNIXTIME(?) AND video_info.create_time <= FROM_UNIXTIME(?) 
+		WHERE users.login_name = ? 
 		ORDER BY video_info.create_time DESC`)
 	defer stmtOut.Close()
 
@@ -143,7 +146,8 @@ func ListAllVideos(username string, from, to int) (videos []*defs.VideoInfo ,e e
 		return nil, e
 	}
 
-	rows, e := stmtOut.Query(username, from, to); if e != nil {
+	//rows, e := stmtOut.Query(username, from, to); if e != nil {
+	rows, e := stmtOut.Query(username); if e != nil {
 		log.Error(e.Error())
 		return nil, e
 	}
@@ -152,7 +156,7 @@ func ListAllVideos(username string, from, to int) (videos []*defs.VideoInfo ,e e
 
 	for rows.Next() {
 		var id, name, ctime string
-		var aid int
+		var aid string
 		if err := rows.Scan(&id, &aid, &name, &ctime); err != nil {
 			return res, err
 		}
@@ -161,5 +165,33 @@ func ListAllVideos(username string, from, to int) (videos []*defs.VideoInfo ,e e
 		res = append(res, vi)
 	}
 
+	log.Warn("%v", res)
+
+	return res, nil
+}
+
+func AddNewVideo(aid string, name string) (*defs.VideoInfo, error) {
+	// create uuid
+	vid, err := utils.GenerateUUID()
+	if err != nil {
+		return nil, err
+	}
+
+	t := time.Now()
+	ctime := t.Format("Jan 02 2006, 15:04:05")
+	stmtIns, err := db.Prepare(`INSERT INTO video_info 
+		(id, author_id, name, display_ctime) VALUES(?, ?, ?, ?)`)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = stmtIns.Exec(vid, aid, name, ctime)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &defs.VideoInfo{Id: vid, AuthorId: aid, Name: name, DisplayCtime: ctime}
+
+	defer stmtIns.Close()
 	return res, nil
 }

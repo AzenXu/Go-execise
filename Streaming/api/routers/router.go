@@ -17,6 +17,7 @@ func Register() *httprouter.Router {
 	r.DELETE("/user/:username", Destory)
 
 	r.GET("/user/:username/videos", LoadVideos)
+	r.POST("/user/:username/videos", UploadVideo)
 	r.GET("/user/:username/videos/:vid-id", LoadVideo)
 	r.DELETE("/user/:username/videos/:vid-id", DeleteVideo)
 

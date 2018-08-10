@@ -85,33 +85,6 @@ function _signinUser(callback) {
     });
 }
 
-//  callback(data, err)
-function _getUserId(username, callback) {
-    let dat = {
-        'url': 'http://' + window.location.hostname + ':9000/user/' + username,
-        'method': 'GET'
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal Error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of getUserId");
-            }
-        }
-    }).done(function (data, statusText, xhr) {
-        callback(data, null);
-    });
-}
-
 function _asyncGetUserId(username) {
     let defer = $.Deferred();
 
@@ -145,11 +118,11 @@ function _asyncGetUserId(username) {
     return defer.promise();
 }
 
-function _asyncListAllVideos(uid) {
+function _asyncListAllVideos(uname) {
     let defer = $.Deferred();
 
     let dat = {
-        'url': 'http://' + window.location.hostname + ':9000/user/' + uid + '/videos',
+        'url': 'http://' + window.location.hostname + ':9000/user/' + uname + '/videos',
         'method': 'GET',
         'req_body': ''
     };
@@ -178,4 +151,83 @@ function _asyncListAllVideos(uid) {
     });
 
     return defer.promise();
+}
+
+let _asyncCreateVideo = (uname, vname, uid, session) => {
+
+    let defer = $.Deferred();
+
+    let reqBody = {
+        'author_id': uid,
+        'name': vname
+    };
+
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/user/' + uname + '/videos',
+        'method': 'POST',
+        'req_body': JSON.stringify(reqBody)
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                defer.reject("Internal error");
+            }
+        },
+        complete: function (xhr, textStatus) {
+            if (xhr.status >= 400) {
+                defer.reject("Error of Signin");
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        if (xhr.status >= 400) {
+            defer.reject("Error of Signin");
+            return;
+        }
+        defer.resolve(data);
+    });
+
+    return defer;
+};
+
+function _postComment(vid, content, callback) {
+    var reqBody = {
+        'author_id': uid,
+        'content': content
+    };
+
+
+    var dat = {
+        'url': 'http://' + window.location.hostname + ':9000/videos/' + vid + '/comments',
+        'method': 'POST',
+        'req_body': JSON.stringify(reqBody)
+    };
+
+    $.ajax({
+        url  : 'http://' + window.location.hostname + ':8080/api',
+        type : 'post',
+        data : JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function() {
+                callback(null, "Internal error");
+            }
+        },
+        complete: function(xhr, textStatus) {
+            if (xhr.status >= 400) {
+                callback(null, "Error of Signin");
+                return;
+            }
+        }
+    }).done(function(data, statusText, xhr){
+        if (xhr.status >= 400) {
+            callback(null, "Error of Signin");
+            return;
+        }
+        callback(data, null);
+    });
 }

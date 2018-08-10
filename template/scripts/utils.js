@@ -78,3 +78,26 @@ function _htmlVideoListElement(vid, name, ctime) {
 
     return res;
 }
+
+function _htmlCommentListElement(cid, author, content) {
+    var ele = $('<div/>', {
+        id: cid
+    });
+
+    ele.append(
+        $('<div/>', {
+            class: 'comment-author',
+            text: author + ' says:'
+        })
+    );
+    ele.append(
+        $('<div/>', {
+            class: 'comment',
+            text: content
+        })
+    );
+
+    ele.append('<hr style="height: 1px; border:none; color:#EDE3E1;background-color:#EDE3E1">');
+
+    return ele;
+}

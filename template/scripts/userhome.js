@@ -4,63 +4,67 @@ let session = _getCookie('session');
 let username = _getCookie('username');
 
 let listedVideos;
-
+let currentVideo;
 
 $(document).ready(function () {
-    _initPage(() => {
-        console.log("ES6 也阔以哦")
+
+    _initPage().then(() => {
+
+        if (listedVideos !== null) {
+            currentVideo = listedVideos[0];
+            _selectVideo(listedVideos[0]['id']);
+        }
+
+        _asyncBindElement();
+    }, (e) => {
+        alert(e);
     });
 
     $("#upload").on('click', function () {
         $("#upload-video-modal").show();
     });
-    //
-    // $("#uploadform").on('submit', function (e) {
-    //     e.preventDefault()
-    //     var vname = $('#vname').val();
-    //
-    //     _createVideo(vname, function (res, err) {
-    //         if (err != null) {
-    //             //window.alert('encounter an error when try to create video');
-    //             _popupErrorMsg('encounter an error when try to create video');
-    //             return;
-    //         }
-    //
-    //         var obj = JSON.parse(res);
-    //         var formData = new FormData();
-    //         formData.append('file', $('#inputFile')[0].files[0]);
-    //
-    //         //  上传视频
-    //         $.ajax({
-    //             url: 'http://' + window.location.hostname + ':8080/upload/' + obj['id'],
-    //             //url:'http://127.0.0.1:8080/upload/dbibi',
-    //             type: 'POST',
-    //             data: formData,
-    //             //headers: {'Access-Control-Allow-Origin': 'http://127.0.0.1:9000'},
-    //             crossDomain: true,
-    //             processData: false,  // tell jQuery not to process the data
-    //             contentType: false,  // tell jQuery not to set contentType
-    //             success: function (data) {
-    //                 console.log(data);
-    //                 $('#uploadvideomodal').hide();
-    //                 location.reload();
-    //                 //window.alert("hoa");
-    //             },
-    //             complete: function (xhr, textStatus) {
-    //                 if (xhr.status === 204) {
-    //                     window.alert("finish")
-    //                     return;
-    //                 }
-    //                 if (xhr.status === 400) {
-    //                     $("#uploadvideomodal").hide();
-    //                     _popupErrorMsg('file is too big');
-    //                     return;
-    //                 }
-    //             }
-    //
-    //         });
-    //     });
-    // });
+
+    $("#upload-form").on('submit', function (e) {
+        e.preventDefault();
+        var vname = $('#vname').val();
+
+        _asyncCreateVideo(username, vname, uid, session).then((res) => {
+            var obj = JSON.parse(res);
+            var formData = new FormData();
+            formData.append('file', $('#inputFile')[0].files[0]);
+
+            //  上传视频
+            $.ajax({
+                url: 'http://' + window.location.hostname + ':8080/upload/' + obj['id'],
+                type: 'POST',
+                data: formData,
+                crossDomain: true,
+                processData: false,  // tell jQuery not to process the data
+                contentType: false,  // tell jQuery not to set contentType
+                complete: function (xhr, textStatus) {
+                    if (xhr.status === 204) {
+                        window.alert("finish");
+                        return;
+                    }
+                    if (xhr.status === 400) {
+                        $("#upload-video-modal").hide();
+                        _popupErrorMsg('file is too big');
+                    }
+                }
+            }).done(function (data, statusText, xhr) {
+                if (xhr.status >= 400) {
+                    alert("Error of Sign in");
+                    return;
+                }
+                alert("🎉上传成功~~~~~");
+                $('#upload-video-modal').hide();
+                location.reload();
+            });;
+
+        }, (err) => {
+            window.alert(err);
+        });
+    });
 
     $(".close").on('click', function () {
         $("#upload-video-modal").hide();
@@ -71,21 +75,33 @@ $(document).ready(function () {
         _setCookie("username", "", -1);
     });
 
-    $(".video-item").click(function () {
-        let url = 'http://' + window.location.hostname + ':9000/videos/' + this.id;
-        let video = $("#curr-video");
-        video[0].attr('src', url);
-        video.load();
-    });
+    // $("#submit-comment").on('click', function() {
+    //     let content = $("#comments-input").val();
+    //     _postComment(currentVideo['id'], content, function(res, err) {
+    //         if (err !== null) {
+    //             alert("encounter and error when try to post a comment: " + content);
+    //             return;
+    //         }
+    //
+    //         if (res === "ok") {
+    //             alert("New comment posted");
+    //             $("#comments-input").val("");
+    //
+    //             // refreshComments(currentVideo['id']);
+    //         }
+    //     });
+    // });
 });
 
-function _initPage(callback) {
+function _initPage() {
+
+    let defer = $.Deferred();
 
     _asyncGetUserId(username).then(function (res) {
         let obj = JSON.parse(res);
         uid = obj['id'];
         console.log("👻 uid: ", uid);
-        return _asyncListAllVideos(uid);
+        return _asyncListAllVideos(username);
     }, function (reason) {
         console.log("🔪", reason);
     }).then(function (res) {
@@ -98,143 +114,65 @@ function _initPage(callback) {
                 $("#items").append(ele);
             });
         }
+        defer.resolve();
     }, function (e) {
-        window.alert(e);
+        defer.reject(e);
     });
-    // _asyncGetUserId(username).fail(function (e) {
-    //     window.alert(e);
-    // }).done(function (res) {
-    //     let obj = JSON.parse(res);
-    //     uid = obj['id'];
-    //     console.log("👻 uid: ", uid);
-    //
-    //     _asyncListAllVideos(uid).fail(function (e) {
-    //         window.alert(e);
-    //     }).done(function (res) {
-    //         let obj = JSON.parse(res);
-    //         listedVideos = obj['videos'];
-    //         obj['videos'].forEach(function (item) {
-    //             let ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
-    //             $("#items").append(ele);
-    //         });
-    //     })
-    // })
-    // _getUserId(function (res, err) {
-    //     if (err != null) {
-    //         window.alert("Encountered error when loading user id");
-    //         return;
-    //     }
-    //
-    //     let obj = JSON.parse(res);
-    //     uid = obj['id'];
-    //     console.log("👻 uid: ", uid);
-    //
-    //     _listAllVideos(function (res, err) {
-    //         if (err != null) {
-    //             //window.alert('encounter an error, pls check your username or pwd');
-    //             _popupErrorMsg('encounter an error, pls check your username or pwd');
+
+    return defer.promise();
+}
+
+_asyncBindElement = () => {
+
+    $(".video-item").click(function() {
+        let self = this.id;
+        listedVideos.forEach(function(item, index) {
+            if (item['id'] === self) {
+                currentVideo = item;
+            }
+        });
+
+        _selectVideo(self);
+    });
+
+    // $(".del-video-button").click(function() {
+    //     var id = this.id.substring(4);
+    //     deleteVideo(id, function(res, err) {
+    //         if (err !== null) {
+    //             //window.alert("encounter an error when try to delete video: " + id);
+    //             popupErrorMsg("encounter an error when try to delete video: " + id);
     //             return;
     //         }
     //
-    //         var obj = JSON.parse(res);
-    //         listedVideos = obj['videos'];
-    //         obj['videos'].forEach(function (item, index) {
-    //             var ele = _htmlVideoListElement(item['id'], item['name'], item['display_ctime']);
-    //             $("#items").append(ele);
-    //         });
-    //         callback();
+    //         popupNotificationMsg("Successfully deleted video: " + id)
+    //         location.reload();
     //     });
     // });
-}
 
-function _listAllVideos(callback) {
-    var dat = {
-        'url': 'http://' + window.location.hostname + ':8000/user/' + uname + '/videos',
-        'method': 'GET',
-        'req_body': ''
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of Signin");
-                return;
-            }
-        }
-    }).done(function (data, statusText, xhr) {
-        if (xhr.status >= 400) {
-            callback(null, "Error of Signin");
-            return;
-        }
-        callback(data, null);
+    $(".video-item").click(function () {
+        let url = 'http://' + window.location.hostname + ':8080/videos/' + this.id;
+        let video = $("#curr-video");
+        video[0].attr('src', url);
+        video.load();
     });
-}
-
-function _createVideo(vname, callback) {
-    var reqBody = {
-        'author_id': uid,
-        'name': vname
-    };
-
-    var dat = {
-        'url': 'http://' + window.location.hostname + ':8000/user/' + uname + '/videos',
-        'method': 'POST',
-        'req_body': JSON.stringify(reqBody)
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of Signin");
-                return;
-            }
-        }
-    }).done(function (data, statusText, xhr) {
-        if (xhr.status >= 400) {
-            callback(null, "Error of Signin");
-            return;
-        }
-        callback(data, null);
-    });
-}
+};
 
 function _selectVideo(vid) {
-    var url = 'http://' + window.location.hostname + ':8080/videos/' + vid
-    var video = $("#curr-video");
+    let url = 'http://' + window.location.hostname + ':8080/videos/' + vid;
     $("#curr-video:first-child").attr('src', url);
     $("#curr-video-name").text(currentVideo['name']);
     $("#curr-video-ctime").text('Uploaded at: ' + currentVideo['display_ctime']);
-    //currentVideoId = vid;
-    _refreshComments(vid);
+    // _refreshComments(vid);
 }
 
 function _refreshComments(vid) {
     _listAllComments(vid, function (res, err) {
         if (err !== null) {
-            //window.alert("encounter an error when loading comments");
-            popupErrorMsg('encounter an error when loading comments');
+            window.alert("encounter an error when loading comments");
             return
         }
 
-        var obj = JSON.parse(res);
+        let obj = JSON.parse(res);
         $("#comments-history").empty();
         if (obj['comments'] === null) {
             $("#comments-total").text('0 Comments');
@@ -242,7 +180,7 @@ function _refreshComments(vid) {
             $("#comments-total").text(obj['comments'].length + ' Comments');
         }
         obj['comments'].forEach(function (item, index) {
-            var ele = htmlCommentListElement(item['id'], item['author'], item['content']);
+            let ele = _htmlCommentListElement(item['id'], item['author'], item['content']);
             $("#comments-history").append(ele);
         });
 
@@ -250,8 +188,8 @@ function _refreshComments(vid) {
 }
 
 function _listAllComments(vid, callback) {
-    var dat = {
-        'url': 'http://' + window.location.hostname + ':8000/videos/' + vid + '/comments',
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/videos/' + vid + '/comments',
         'method': 'GET',
         'req_body': ''
     };
