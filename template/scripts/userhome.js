@@ -86,7 +86,7 @@ $(document).ready(function () {
                 alert("👻 评论发布好了~");
                 $("#comments-input").val("");
 
-                // refreshComments(currentVideo['id']);
+                _refreshComments(currentVideo['id']);
             }
         });
     });
@@ -162,60 +162,30 @@ function _selectVideo(vid) {
     $("#curr-video:first-child").attr('src', url);
     $("#curr-video-name").text(currentVideo['name']);
     $("#curr-video-ctime").text('Uploaded at: ' + currentVideo['display_ctime']);
-    // _refreshComments(vid);
+    _refreshComments(vid);
 }
 
 function _refreshComments(vid) {
     _listAllComments(vid, function (res, err) {
         if (err !== null) {
-            window.alert("encounter an error when loading comments");
+            window.alert("加载评论出错");
             return
         }
 
         let obj = JSON.parse(res);
+        console.log(obj);
+
         $("#comments-history").empty();
         if (obj['comments'] === null) {
             $("#comments-total").text('0 Comments');
         } else {
             $("#comments-total").text(obj['comments'].length + ' Comments');
+            obj['comments'].forEach(function (item) {
+                let ele = _htmlCommentListElement(item['id'], item['author'], item['content']);
+                $("#comments-history").append(ele);
+            });
         }
-        obj['comments'].forEach(function (item, index) {
-            let ele = _htmlCommentListElement(item['id'], item['author'], item['content']);
-            $("#comments-history").append(ele);
-        });
 
-    });
-}
-
-function _listAllComments(vid, callback) {
-    let dat = {
-        'url': 'http://' + window.location.hostname + ':9000/videos/' + vid + '/comments',
-        'method': 'GET',
-        'req_body': ''
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of Signin");
-                return;
-            }
-        }
-    }).done(function (data, statusText, xhr) {
-        if (xhr.status >= 400) {
-            callback(null, "Error of Signin");
-            return;
-        }
-        callback(data, null);
     });
 }
 

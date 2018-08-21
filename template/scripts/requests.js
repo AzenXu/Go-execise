@@ -234,3 +234,35 @@ function _postComment(vid, uid, content, callback) {
         callback(data, null);
     });
 }
+
+function _listAllComments(vid, callback) {
+    let dat = {
+        'url': 'http://' + window.location.hostname + ':9000/videos/' + vid + '/comments',
+        'method': 'GET',
+        'req_body': ''
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                callback(null, "Internal error");
+            }
+        },
+        complete: function (xhr, textStatus) {
+            if (xhr.status >= 400) {
+                callback(null, "Error of Signin");
+                return;
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        if (xhr.status >= 400) {
+            callback(null, "Error of Signin");
+            return;
+        }
+        callback(data, null);
+    });
+}

@@ -80,7 +80,7 @@ function _htmlVideoListElement(vid, name, ctime) {
 }
 
 function _htmlCommentListElement(cid, author, content) {
-    var ele = $('<div/>', {
+    var ele = $('<div />', {
         id: cid
     });
 
@@ -91,7 +91,7 @@ function _htmlCommentListElement(cid, author, content) {
         })
     );
     ele.append(
-        $('<div/>', {
+        $('<div />', {
             class: 'comment',
             text: content
         })

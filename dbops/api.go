@@ -217,29 +217,34 @@ func AddNewComments(vid string, aid int, content string) error {
 	return nil
 }
 
-//func ListComments(vid string, from, to int) ([]*defs.VideoComment, error) {
-//	stmtOut, err := db.Prepare(` SELECT comments.id, users.Login_name, comments.content FROM comments
-//		INNER JOIN users ON comments.author_id = users.id
-//		WHERE comments.video_id = ? AND comments.time > FROM_UNIXTIME(?) AND comments.time <= FROM_UNIXTIME(?)
-//		ORDER BY comments.time DESC`)
-//
-//	var res []*defs.VideoComment
-//
-//	rows, err := stmtOut.Query(vid, from, to)
-//	if err != nil {
-//		return res, err
-//	}
-//
-//	for rows.Next() {
-//		var id, name, content string
-//		if err := rows.Scan(&id, &name, &content); err != nil {
-//			return res, err
-//		}
-//
-//		c := &defs.VideoComment{Id: id, VideoId: vid, Author: name, Content: content}
-//		res = append(res, c)
-//	}
-//	defer stmtOut.Close()
-//
-//	return res, nil
-//}
+func ListComments(vid string, from, to int) ([]*defs.VideoComment, error) {
+	//stmtOut, err := db.Prepare(` SELECT comments.id, users.Login_name, comments.content FROM comments
+	//	INNER JOIN users ON comments.author_id = users.id
+	//	WHERE comments.video_id = ? AND comments.time > FROM_UNIXTIME(?) AND comments.time <= FROM_UNIXTIME(?)
+	//	ORDER BY comments.time DESC`)
+
+	stmtOut, err := db.Prepare(` SELECT comments.id, users.Login_name, comments.content FROM comments
+		INNER JOIN users ON comments.author_id = users.id
+		WHERE comments.video_id = ?
+		ORDER BY comments.time DESC`)
+
+	var res []*defs.VideoComment
+
+	rows, err := stmtOut.Query(vid)
+	if err != nil {
+		return res, err
+	}
+
+	for rows.Next() {
+		var id, name, content string
+		if err := rows.Scan(&id, &name, &content); err != nil {
+			return res, err
+		}
+
+		c := &defs.VideoComment{Id: id, VideoId: vid, Author: name, Content: content}
+		res = append(res, c)
+	}
+	defer stmtOut.Close()
+
+	return res, nil
+}

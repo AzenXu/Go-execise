@@ -11,10 +11,30 @@ import (
 	"daker.wang/Azen/Go-execise/dbops"
 	"daker.wang/Azen/Go-execise/Streaming/api/response"
 	"strconv"
+	"daker.wang/Azen/Go-execise/Streaming/api/utils"
 )
 
 func LoadComments(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	//  通过vid查comments，按时间排序
+	vid := params.ByName("vid")
+
+	comments, e := dbops.ListComments(vid, 0, utils.CurrentTimestampSec()); if e != nil {
+		log.Error(e.Error())
+		response.SendErrorResponse(w, defs.ErrorDBError)
+		return
+	}
+
+	commentsResult := &defs.Comments{Comments:comments}
+
+	//  拼装返回
+	rc, err := json.Marshal(commentsResult); if err != nil {
+		log.Error("评论Marshal错误")
+		response.SendErrorResponse(w, defs.ErrorInternalFaults)
+		return
+	}
+
+	response.SendNormalResponse(w, string(rc), http.StatusOK)
+	log.Info("返回comment成功")
 }
 
 func PostComment(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
