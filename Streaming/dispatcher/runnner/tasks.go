@@ -4,7 +4,6 @@ import (
 	"github.com/gpmgo/gopm/modules/log"
 	"daker.wang/Azen/Go-execise/Streaming/dispatcher/ops"
 	"sync"
-	"time"
 )
 
 type TaskEvent int
@@ -64,8 +63,6 @@ func VideoClearExecutor(data chan string) *TaskResult {
 			}
 		}
 
-	time.Sleep(4 * time.Second)
-
 	errs := pickUpSyncMap(errMap)
 	if errs == nil {
 		return &TaskResult{Event:TaskEventNormal}
@@ -75,7 +72,7 @@ func VideoClearExecutor(data chan string) *TaskResult {
 }
 
 func pickUpSyncMap(syncMap sync.Map) map[string]error {
-	var errResult map[string]error
+	var errResult = map[string]error{}
 	syncMap.Range(func(key, value interface{}) bool {
 		errResult[key.(string)] = value.(error)
 		return true
