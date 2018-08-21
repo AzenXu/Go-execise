@@ -4,6 +4,7 @@ import (
 	"github.com/gpmgo/gopm/modules/log"
 	"daker.wang/Azen/Go-execise/Streaming/dispatcher/ops"
 	"sync"
+	"time"
 )
 
 type TaskEvent int
@@ -53,14 +54,17 @@ func VideoClearExecutor(data chan string) *TaskResult {
 				go func(item string) {
 					err := ops.DeleteVideo(item); if err != nil {
 						errMap.Store(item, err)
+						log.Error("delete error id：%s, err: %v", item, err.Error())
 					}
-					log.Error("delete error id：%s, err: %v", item, err.Error())
+					log.Warn("🎉 %s的生产任务结束了", item)
+
 				}(d)
-				return &TaskResult{Event: TaskEventNormal}
 			default:
 				break forloop
 			}
 		}
+
+	time.Sleep(4 * time.Second)
 
 	errs := pickUpSyncMap(errMap)
 	if errs == nil {

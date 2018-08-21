@@ -4,7 +4,7 @@ import (
 	"log"
 )
 
-type fn func(data chan string) error
+type fn func(data chan string) *TaskResult
 
 type Engine struct {
 	Data chan string // 待删数据
@@ -36,7 +36,8 @@ func(e *Engine) startDispatch() {
 			if c == 1 {
 				//  开始消费
 				log.Println("开始消费")
-				err := e.Executor(e.Data); if err != nil {
+				tr := e.Executor(e.Data)
+				if tr.Err != nil || tr.Event == TaskEventClose {
 					e.Err <- 0
 				} else {
 					e.Control <- 2
@@ -44,8 +45,10 @@ func(e *Engine) startDispatch() {
 			} else if c == 2 {
 				//  开始生产
 				log.Println("开始生产")
-				err := e.Dispatcher(e.Data); if err != nil {
+				tr := e.Dispatcher(e.Data)
+				if tr.Err != nil || tr.Event == TaskEventClose {
 					e.Err <- 0
+					log.Println("💋 本次生产任务已经全部结束！")
 				} else {
 					e.Control <- 1
 				}

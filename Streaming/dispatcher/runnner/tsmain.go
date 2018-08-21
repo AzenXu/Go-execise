@@ -3,6 +3,7 @@ package runnner
 import (
 	"time"
 	"fmt"
+	"github.com/gpmgo/gopm/modules/log"
 )
 
 type Worker struct {
@@ -18,9 +19,12 @@ func NewWorker(interval time.Duration, engine *Engine) *Worker {
 }
 
 func (w *Worker) startWork() {
+	index := 0
 	for {
 		select {
 		case <- w.ticker.C:
+			log.Warn("🚀 第%d次定时器就要开动了~", index)
+			index++
 			go w.engine.StartAll()
 		}
 	}
@@ -28,7 +32,7 @@ func (w *Worker) startWork() {
 
 func Start() {
 	eng := New(3, VideoClearDispatcher, VideoClearExecutor)
-	worker := NewWorker(5, eng)
+	worker := NewWorker(30 * time.Second, eng)
 	go worker.startWork()
 }
 
