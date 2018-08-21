@@ -51,7 +51,7 @@ $(document).ready(function () {
                         _popupErrorMsg('file is too big');
                     }
                 }
-            }).done(function (data, statusText, xhr) {
+            }).done((data, statusText, xhr) => {
                 if (xhr.status >= 400) {
                     alert("Error of Sign in");
                     return;
@@ -59,7 +59,7 @@ $(document).ready(function () {
                 alert("🎉上传成功~~~~~");
                 $('#upload-video-modal').hide();
                 location.reload();
-            });;
+            });
 
         }, (err) => {
             window.alert(err);
@@ -152,7 +152,8 @@ _asyncBindElement = () => {
     $(".video-item").click(function () {
         let url = 'http://' + window.location.hostname + ':8080/videos/' + this.id;
         let video = $("#curr-video");
-        video[0].attr('src', url);
+        video.attr('src', url);
+        console.log(video);
         video.load();
     });
 };

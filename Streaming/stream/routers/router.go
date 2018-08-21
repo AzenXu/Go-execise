@@ -15,7 +15,7 @@ import (
 )
 
 const filePath = "./videos/"
-const max_file_length = 1024 * 1024 * 50
+const maxFileLength = 1024 * 1024 * 150
 
 func Regist() (r *httprouter.Router) {
 	r = httprouter.New()
@@ -43,10 +43,10 @@ func Regist() (r *httprouter.Router) {
 
 func uploadHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	//  检查大小
-	request.Body = http.MaxBytesReader(writer, request.Body, max_file_length)
+	request.Body = http.MaxBytesReader(writer, request.Body, maxFileLength)
 
 	//  解析文件
-	err := request.ParseMultipartForm(max_file_length); if err != nil {
+	err := request.ParseMultipartForm(maxFileLength); if err != nil {
 		response.SendErrorResponse(writer, defs.ErrorRequestBodyParseFailed)
 	}
 

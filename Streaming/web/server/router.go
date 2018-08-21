@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/http/httputil"
 	"net/url"
+	"github.com/gpmgo/gopm/modules/log"
 )
 
 const filePath = "./videos/"
@@ -108,6 +109,7 @@ func proxyVideoHandler(writer http.ResponseWriter, request *http.Request, params
 
 func proxyUploadHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	u, e := url.Parse("http://localhost:9001"); if e != nil {
+		log.Error("🙉 上传转发出错 %v", e)
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(u)
