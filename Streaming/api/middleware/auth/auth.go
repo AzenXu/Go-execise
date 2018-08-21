@@ -16,7 +16,7 @@ func ValidateSession(request *http.Request) (bool) {
 		return false
 	}
 
-	if session.IsSessionExpired(sid) {
+	if !session.IsSessionUseful(sid) {
 		return false
 	}
 

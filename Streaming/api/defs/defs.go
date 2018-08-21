@@ -46,3 +46,20 @@ type VideoInfo struct {
 	Name string `json:"name"`
 	DisplayCtime string `json:"display_ctime"`
 }
+
+type CommentRequest struct {
+	AuthorId string `json:"author_id"`
+	Content string `json:"content"`
+}
+
+//  通过两张表inner join检索出来的
+type VideoComment struct {
+	Id string `json:"id"`
+	VideoId string `json:"video_id"`
+	Author string `json:"author"`
+	Content string `json:"content"`
+}
+
+type Comments struct {
+	Comments []*VideoComment `json:"comments"`
+}

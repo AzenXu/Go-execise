@@ -21,9 +21,9 @@ func Register() *httprouter.Router {
 	r.GET("/user/:username/videos/:vid-id", LoadVideo)
 	r.DELETE("/user/:username/videos/:vid-id", DeleteVideo)
 
-	r.GET("/video/:vid/comments", LoadComments)
-	r.POST("/video/:vid/comments", PostComment)
-	r.DELETE("/video/:vid/comment/cid", DeleteComment)
+	r.GET("/videos/:vid/comments", LoadComments)
+	r.POST("/videos/:vid/comments", PostComment)
+	r.DELETE("/videos/:vid/comment/cid", DeleteComment)
 
 	return r
 }

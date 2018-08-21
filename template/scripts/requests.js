@@ -194,7 +194,10 @@ let _asyncCreateVideo = (uname, vname, uid, session) => {
     return defer;
 };
 
-function _postComment(vid, content, callback) {
+function _postComment(vid, uid, content, callback) {
+
+    console.log("uid = ", uid);
+
     var reqBody = {
         'author_id': uid,
         'content': content

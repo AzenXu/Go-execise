@@ -1,5 +1,4 @@
 let uid;
-
 let session = _getCookie('session');
 let username = _getCookie('username');
 
@@ -75,22 +74,22 @@ $(document).ready(function () {
         _setCookie("username", "", -1);
     });
 
-    // $("#submit-comment").on('click', function() {
-    //     let content = $("#comments-input").val();
-    //     _postComment(currentVideo['id'], content, function(res, err) {
-    //         if (err !== null) {
-    //             alert("encounter and error when try to post a comment: " + content);
-    //             return;
-    //         }
-    //
-    //         if (res === "ok") {
-    //             alert("New comment posted");
-    //             $("#comments-input").val("");
-    //
-    //             // refreshComments(currentVideo['id']);
-    //         }
-    //     });
-    // });
+    $("#submit-comment").on('click', () => {
+        let content = $("#comments-input").val();
+        _postComment(currentVideo['id'], uid, content, (res, err) => {
+            if (err !== null) {
+                alert("发布评论的时候出错: " + content);
+                return;
+            }
+
+            if (res === "OK") {
+                alert("👻 评论发布好了~");
+                $("#comments-input").val("");
+
+                // refreshComments(currentVideo['id']);
+            }
+        });
+    });
 });
 
 function _initPage() {

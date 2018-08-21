@@ -28,15 +28,16 @@ func loadSessionFromCache(sid string) *defs.Session {
 		return nil
 	}
 
-	sm, ok := session.(defs.Session); if ok {
-		log.Warn("OK")
+	sm, ok := session.(*defs.Session); if !ok {
+		log.Warn("数据库数据类型不匹配")
+		return nil
 	}
-	return &sm
+	return sm
 }
 
 func loadSession(sid string) (session *defs.Session) {
 	session = loadSessionFromCache(sid)
-	if session != nil {
+	if session != nil && session.SessionID != "" && session.TTL != 0 {
 		return session
 	}
 
@@ -65,13 +66,14 @@ func GenerateSession(username string) (session *defs.Session) {
 	return session
 }
 
-func IsSessionExpired(sid string) (ok bool) {
+func IsSessionUseful(sid string) (ok bool) {
 	session := loadSession(sid)
 	if session == nil {
 		return false
 	}
 
 	if session.TTL < int64(utils.CurrentTimestampSec()) {
+		log.Error("session已过期")
 		return false
 	}
 
