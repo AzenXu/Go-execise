@@ -134,26 +134,19 @@ _asyncBindElement = () => {
         _selectVideo(self);
     });
 
-    // $(".del-video-button").click(function() {
-    //     var id = this.id.substring(4);
-    //     deleteVideo(id, function(res, err) {
-    //         if (err !== null) {
-    //             //window.alert("encounter an error when try to delete video: " + id);
-    //             popupErrorMsg("encounter an error when try to delete video: " + id);
-    //             return;
-    //         }
-    //
-    //         popupNotificationMsg("Successfully deleted video: " + id)
-    //         location.reload();
-    //     });
-    // });
+    $(".del-video-button").click(function() {
+        var id = this.id.substring(4);
+        console.log("🥚 del-video-button click");
+        _deleteVideo(id, username, function(res, err) {
+            console.log("callback进来了", res, username, err);
+            if (err !== null) {
+                alert("encounter an error when try to delete video: " + id);
+                return;
+            }
 
-    $(".video-item").click(function () {
-        let url = 'http://' + window.location.hostname + ':8080/videos/' + this.id;
-        let video = $("#curr-video");
-        video.attr('src', url);
-        console.log(video);
-        video.load();
+            alert("Successfully deleted video: " + id);
+            location.reload();
+        });
     });
 };
 
@@ -186,37 +179,5 @@ function _refreshComments(vid) {
             });
         }
 
-    });
-}
-
-function _deleteVideo(vid, callback) {
-    var dat = {
-        'url': 'http://' + window.location.hostname + ':8000/user/' + uname + '/videos/' + vid,
-        'method': 'DELETE',
-        'req_body': ''
-    };
-
-    $.ajax({
-        url: 'http://' + window.location.hostname + ':8080/api',
-        type: 'post',
-        data: JSON.stringify(dat),
-        headers: {'X-Session-Id': session},
-        statusCode: {
-            500: function () {
-                callback(null, "Internal error");
-            }
-        },
-        complete: function (xhr, textStatus) {
-            if (xhr.status >= 400) {
-                callback(null, "Error of Signin");
-                return;
-            }
-        }
-    }).done(function (data, statusText, xhr) {
-        if (xhr.status >= 400) {
-            callback(null, "Error of Signin");
-            return;
-        }
-        callback(data, null);
     });
 }

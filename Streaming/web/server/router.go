@@ -31,6 +31,8 @@ func Regist() (r *httprouter.Router) {
 
 	r.POST("/upload/:vid-id", proxyUploadHandler)
 
+
+
 	r.ServeFiles("/statics/*filepath", http.Dir("./template"))
 
 	r.GET("/test", func(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {

@@ -196,6 +196,37 @@ func AddNewVideo(aid string, name string) (*defs.VideoInfo, error) {
 	return res, nil
 }
 
+func RemoveVideo(vid string) error {
+	stmtDel, err := db.Prepare("DELETE FROM video_info WHERE id=?")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmtDel.Exec(vid)
+	if err != nil {
+		return err
+	}
+
+	defer stmtDel.Close()
+	return nil
+}
+
+func AddVideoDeletionRecord(vid string) error {
+	stmtIns, err := db.Prepare("INSERT INTO video_del_rec (video_id) VALUES(?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmtIns.Exec(vid)
+	if err != nil {
+		log.Error("AddVideoDeletionRecord error: %v", err)
+		return err
+	}
+
+	defer stmtIns.Close()
+	return nil
+}
+
 //  comments
 func AddNewComments(vid string, aid int, content string) error {
 	id, err := utils.GenerateUUID()

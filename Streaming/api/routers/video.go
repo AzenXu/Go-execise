@@ -69,4 +69,23 @@ func LoadVideo(w http.ResponseWriter, r *http.Request, params httprouter.Params)
 
 func DeleteVideo(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	//  通过vid删除id
+	vid := params.ByName("vid-id")
+	username := params.ByName("username")
+	if !auth.ValidateSessionMatch(username, r) {
+		log.Error("删除操作鉴权失败 \n")
+		return
+	}
+
+	//  数据库原表删除，del表添加
+	err := dbops.RemoveVideo(vid); if err != nil {
+		log.Error("删除%v失败", vid)
+		response.SendErrorResponse(w, defs.ErrorInternalFaults)
+		return
+	}
+
+	err = dbops.AddVideoDeletionRecord(vid); if err != nil {
+		log.Error("添加删除任务失败：%v", vid)
+	}
+
+	response.SendNormalResponse(w, "OK", http.StatusOK)
 }

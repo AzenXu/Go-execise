@@ -22,3 +22,17 @@ func ValidateSession(request *http.Request) (bool) {
 
 	return true
 }
+
+func ValidateSessionMatch(username string, request *http.Request) (bool) {
+	if !ValidateSession(request) {
+		return false
+	}
+
+	sid := request.Header.Get(HeaderFieldSession)
+
+	if !session.IsUserMatch(username, sid) {
+		return false
+	}
+
+	return true
+}

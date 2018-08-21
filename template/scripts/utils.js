@@ -61,7 +61,7 @@ function _htmlVideoListElement(vid, name, ctime) {
         class: 'video-item'
     }).append(ele);
 
-    res.append(
+    ele.append(
         $('<button/>', {
             id: 'del-' + vid,
             type: 'button',

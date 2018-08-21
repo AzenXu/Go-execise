@@ -80,6 +80,18 @@ func IsSessionUseful(sid string) (ok bool) {
 	return true
 }
 
+func IsUserMatch(username string, sid string) (isMatch bool) {
+	if !IsSessionUseful(sid) {
+		return false
+	}
+	session := loadSession(sid)
+	if session.UserName != username {
+		return false
+	}
+
+	return true
+}
+
 func updateSession(session defs.Session) {
 	sessions.Store(session.SessionID, session)
 	_, e := dbops.SelectSession(session.SessionID)

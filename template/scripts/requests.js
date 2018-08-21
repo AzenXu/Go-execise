@@ -194,6 +194,43 @@ let _asyncCreateVideo = (uname, vname, uid, session) => {
     return defer;
 };
 
+function _deleteVideo(vid, username, callback) {
+
+    console.log("_deleteVideo进来了");
+
+    var dat = {
+        'url': 'http://' + window.location.hostname + ':9000/user/' + username + '/videos/' + vid,
+        'method': 'DELETE',
+        'req_body': ''
+    };
+
+    $.ajax({
+        url: 'http://' + window.location.hostname + ':8080/api',
+        type: 'post',
+        data: JSON.stringify(dat),
+        headers: {'X-Session-Id': session},
+        statusCode: {
+            500: function () {
+                callback(null, "Internal error");
+            }
+        },
+        complete: function (xhr) {
+            console.log("complete了了了了",xhr.status);
+            if (xhr.status >= 400) {
+                callback(null, "Error of Signin");
+                return;
+            }
+        }
+    }).done(function (data, statusText, xhr) {
+        console.log("done了了了");
+        if (xhr.status >= 400) {
+            callback(null, "Error of Signin");
+            return;
+        }
+        callback(data, null);
+    });
+}
+
 function _postComment(vid, uid, content, callback) {
 
     console.log("uid = ", uid);
