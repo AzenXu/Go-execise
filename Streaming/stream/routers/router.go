@@ -95,8 +95,8 @@ func uploadHandler(writer http.ResponseWriter, request *http.Request, params htt
 
 func streamHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	filename := "/videos/" + params.ByName("vid-id")
-	bucket := "daker-wang-video.oss-cn-beijing-internal.aliyuncs.com"
-	uri := bucket + filename
+	endpoint := "daker-wang-video.oss-cn-beijing-internal.aliyuncs.com"
+	uri := endpoint + filename
 
 	log.Info("☁️转发到OSS服务器 %s", filename)
 

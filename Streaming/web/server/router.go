@@ -9,6 +9,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"github.com/gpmgo/gopm/modules/log"
+	"azen/config"
 )
 
 const filePath = "./videos/"
@@ -102,7 +103,7 @@ func aipHandler(writer http.ResponseWriter, request *http.Request, params httpro
 }
 
 func proxyVideoHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	u, e := url.Parse("http://localhost:9001"); if e != nil {
+	u, e := url.Parse("http://" + config.GetLBAddress() + ":9001"); if e != nil {
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(u)

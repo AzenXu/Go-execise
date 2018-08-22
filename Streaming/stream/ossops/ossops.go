@@ -2,6 +2,7 @@ package ossops
 
 import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"azen/config"
 )
 
 var EndPoint string
@@ -9,7 +10,7 @@ var AccessKeyId string
 var AccessKeySecret string
 
 func init() {
-	EndPoint = ""
+	EndPoint = config.GetOSSAddress()
 	AccessKeyId = ""
 	AccessKeySecret = ""
 }

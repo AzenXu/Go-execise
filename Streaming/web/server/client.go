@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"encoding/json"
+	"azen/config"
 )
 
 var httpClient *http.Client
@@ -21,7 +22,7 @@ func requestAPI(b *ApiBody, w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	u, _ := url.Parse(b.Url)
-	u.Host = "localhost" + ":" + u.Port()
+	u.Host = config.GetLBAddress() + ":" + u.Port()
 	newUrl := u.String()
 
 	log.Println("👻 准备转发请求，newURL:", newUrl, "Ori URL:", r.URL.RequestURI())
