@@ -8,10 +8,10 @@ import (
 	"daker.wang/Azen/Go-execise/Streaming/stream/response"
 	"daker.wang/Azen/Go-execise/Streaming/api/defs"
 	"github.com/gpmgo/gopm/modules/log"
-	"os"
-	"time"
 	"html/template"
 	"fmt"
+	"daker.wang/Azen/Go-execise/Streaming/stream/ossops"
+	"os"
 )
 
 const filePath = "./videos/"
@@ -80,29 +80,27 @@ func uploadHandler(writer http.ResponseWriter, request *http.Request, params htt
 		return
 	}
 
+	ok := ossops.UploadToOss("/videos/"+fn, uri, "daker-wang-video"); if !ok {
+		fmt.Println("上传到云OSS失败", err)
+		response.SendErrorResponse(writer, defs.ErrorInternalFaults)
+		return
+	} else {
+		//  上传成功，干掉native文件
+		os.Remove(uri)
+	}
+
 	//  报告结果
 	response.SendNormalResponse(writer, "upload successful", http.StatusCreated)
 }
 
 func streamHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	//  找到文件
-	fn := params.ByName("vid-id")
-	uri := filePath + fn
-	//  打开文件 - 不是读二进制哦ioutil.ReadAll()
-	file, e := os.Open(uri)
-	defer file.Close()
+	filename := "/videos/" + params.ByName("vid-id")
+	bucket := "daker-wang-video.oss-cn-beijing-internal.aliyuncs.com"
+	uri := bucket + filename
 
-	if e != nil {
-		log.Error(e.Error())
-		response.SendErrorResponse(writer, defs.ErrorInternalFaults)
-		return
-	}
+	log.Info("☁️转发到OSS服务器 %s", filename)
 
-	//  写头
-	writer.Header().Set("Content-Type", "video/mp4")
-
-	//  写流
-	http.ServeContent(writer, request, "", time.Now(), file)
+	http.Redirect(writer, request, uri, http.StatusMovedPermanently)
 }
 
 func deleteHandler(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
