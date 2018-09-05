@@ -12,3 +12,6 @@
 *.out
 Demo/*
 Programming/*
+.idea
+bin
+videos
